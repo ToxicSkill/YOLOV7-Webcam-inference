@@ -28,12 +28,13 @@ namespace YoloV7WebCamInference.ViewModels
 
         private readonly ICameraService _cameraService;
 
-        private static readonly string YoloV7Path = "E:\\Code\\C#\\YOLOV7-Webcam-inference\\Yolo\\Models\\yolov7-tiny.onnx";
+        private readonly string _modelPath;
 
-        public CameraWindowViewModel(IYoloModelService yoloModelService, ICameraService cameraService)
+        public CameraWindowViewModel(IYoloModelService yoloModelService, ICameraService cameraService, string modelPath)
         {
             _yoloModelService = yoloModelService;
             _cameraService = cameraService;
+            _modelPath = modelPath;
             InitializeCamera();
 
             if (InitializeYolo())
@@ -49,7 +50,7 @@ namespace YoloV7WebCamInference.ViewModels
 
         private bool InitializeYolo()
         {
-            var status = _yoloModelService.LoadYoloModel(YoloV7Path);
+            var status = _yoloModelService.LoadYoloModel(_modelPath);
             
             if (status)
             {

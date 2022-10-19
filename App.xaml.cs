@@ -11,9 +11,10 @@ namespace YoloV7WebCamInference
     {
         private readonly IServiceProvider _serviceProvider;
 
+        private const string ModelPath = "ModelPath\\yolov7-tiny.onnx";
+
         public App()
         {
-
             IServiceCollection services = new ServiceCollection();
 
             _ = services
@@ -40,7 +41,7 @@ namespace YoloV7WebCamInference
         {
             var yoloModelService = provider.GetRequiredService<IYoloModelService>();
             var cameraService = provider.GetRequiredService<ICameraService>();
-            return new CameraWindowViewModel(yoloModelService, cameraService);
+            return new CameraWindowViewModel(yoloModelService, cameraService, ModelPath);
         }
 
         public static IYoloModelService CreateYoloModelService(IServiceProvider provider)
