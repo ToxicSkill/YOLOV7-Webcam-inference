@@ -26,5 +26,9 @@ Use Release confgursation for better performance.
 
 ## References & Acknowledgements
 
-[https://github.com/WongKinYiu/yolov7](https://github.com/WongKinYiu/yolov7)
-[https://github.com/ivilson/Yolov7net](https://github.com/ivilson/Yolov7net)
+<details><summary> <b>Expand</b> </summary>
+        
+* [https://github.com/WongKinYiu/yolov7](https://github.com/WongKinYiu/yolov7)
+* [https://github.com/ivilson/Yolov7net](https://github.com/ivilson/Yolov7net)
+
+</details>
