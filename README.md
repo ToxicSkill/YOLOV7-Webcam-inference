@@ -20,7 +20,7 @@ python export.py --weights yolov7-tiny.pt --grid --end2end --simplify \
         --topk-all 100 --iou-thres 0.65 --conf-thres 0.35 --img-size 640 640 --max-wh 640
 ```
         
-Place exported ONNX model in solution folder (e.q. Yolo/Models) and change <b>YoloV7Path</b> variable in CameraWindowViewModel.cs file (line 31)
+Place exported ONNX model in solution folder (e.q. Yolo/Models) and change <b>ModelPath</b> const value in App.xaml.cs file (line 14)
 
 Use <b>Release</b> confguration for better performance.
 
