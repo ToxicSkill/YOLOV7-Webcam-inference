@@ -28,7 +28,7 @@ namespace YoloV7WebCamInference.ViewModels
 
         private readonly ICameraService _cameraService;
 
-        private static readonly string YoloV7Path = "PathToModel\\yolov7-tiny.onnx";
+        private static readonly string YoloV7Path = "E:\\Code\\C#\\YOLOV7-Webcam-inference\\Yolo\\Models\\yolov7-tiny.onnx";
 
         public CameraWindowViewModel(IYoloModelService yoloModelService, ICameraService cameraService)
         {
