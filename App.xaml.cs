@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Windows;
-using Microsoft.Extensions.DependencyInjection;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Services;
 using YoloV7WebCamInference.ViewModels;
@@ -11,7 +11,7 @@ namespace YoloV7WebCamInference
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private const string ModelPath = "C:\\Users\\Adam Poler\\Desktop\\WŁASNE_PROGRAMY\\YOLOV7-Webcam-inference2\\yolov7-tiny.onnx";
+        private const string ModelPath = "E:\\Code\\C#\\YOLOV7-Webcam-inference\\yolov7-tiny.onnx";
 
         public App()
         {

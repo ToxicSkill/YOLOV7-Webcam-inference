@@ -9,25 +9,25 @@ namespace YoloV7WebCamInference.Services
 {
     public class CameraService : ICameraService
     {
+        private int _currentCameraIndex;
 
         private VideoCapture _videoCapture;
 
-        private Camera _currentCamera;
-
         private List<Camera> _cameras;
 
-        private readonly Mat _image = new ();
+        private readonly Mat _image = new();
 
         public CameraService()
         {
+            _cameras = new List<Camera>();
             GetAllConnectedCameras();
             _videoCapture = new VideoCapture();
-            SetCurrentCamera(_cameras.Count > 0 ? _cameras.First() : null);
+            SetCurrentCamera(_cameras?.Count > 0 ? _cameras.First() : null);
         }
 
         public string GetCurrentCameraName()
         {
-            return _currentCamera.Name;
+            return _cameras[_currentCameraIndex].Name;
         }
 
         public List<Camera> GetAllCameras()
@@ -37,7 +37,7 @@ namespace YoloV7WebCamInference.Services
 
         public Camera GetCurrentCamera()
         {
-            return _currentCamera;
+            return _cameras[_currentCameraIndex];
         }
 
         public void SetCurrentCamera(Camera? camera)
@@ -46,8 +46,9 @@ namespace YoloV7WebCamInference.Services
             {
                 return;
             }
-            _currentCamera = camera;
-            _videoCapture = _currentCamera.VideoCapture;
+
+            _currentCameraIndex = _cameras.IndexOf(camera);
+            _videoCapture = _cameras[_currentCameraIndex].VideoCapture;
         }
 
         public Mat GetFrame()
@@ -84,7 +85,7 @@ namespace YoloV7WebCamInference.Services
 
         private void GetAllConnectedCameras()
         {
-            _cameras = new ();
+            _cameras = new();
             var cameraIndex = 0;
             foreach (var cameraName in GetConnectedCameras())
             {
@@ -96,11 +97,12 @@ namespace YoloV7WebCamInference.Services
         private static List<string> GetConnectedCameras()
         {
             var cameraNames = new List<string>();
-            using (ManagementObjectSearcher searcher = new ("SELECT * FROM Win32_PnPEntity WHERE (PNPClass = 'Image' OR PNPClass = 'Camera')"))
+            using (ManagementObjectSearcher searcher = new("SELECT * FROM Win32_PnPEntity WHERE (PNPClass = 'Image' OR PNPClass = 'Camera')"))
             {
                 foreach (var device in searcher.Get())
                 {
-                    cameraNames.Add(device["Caption"].ToString());
+                    var deviceName = device["Caption"].ToString() ?? string.Empty;
+                    cameraNames.Add(deviceName);
                 }
             }
 

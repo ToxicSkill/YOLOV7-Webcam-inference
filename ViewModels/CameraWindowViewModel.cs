@@ -13,16 +13,14 @@ namespace YoloV7WebCamInference.ViewModels
 {
     public partial class CameraWindowViewModel : ViewModelBase
     {
-        private bool _isStopped = true;
-
         private CancellationToken _cancellationToken;
 
         private Camera _selectedCamera;
 
         public ObservableCollection<Camera> AvailableCameras { get; set; }
 
-        public Camera SelectedCamera 
-        { 
+        public Camera SelectedCamera
+        {
             get => _selectedCamera;
             set
             {
@@ -30,9 +28,9 @@ namespace YoloV7WebCamInference.ViewModels
                 {
                     _selectedCamera = value;
                     OnPropertyChanged(nameof(SelectedCamera));
-                    HandleCameraChange();
+                    HandleCameraChange().ContinueWith(OnAsyncFailed, TaskContinuationOptions.OnlyOnFaulted);
                 }
-            } 
+            }
         }
 
         public string CameraName { get; private set; }
@@ -58,31 +56,34 @@ namespace YoloV7WebCamInference.ViewModels
             {
                 CameraName = "Failed to initialize yolo model or camera";
                 App.Current.Shutdown();
-            }           
+            }
 
             OnPropertyChanged(nameof(AvailableCameras));
         }
 
-        private void HandleCameraChange()
+        private static void OnAsyncFailed(Task task)
         {
-            while (!_isStopped)
+            if (task != null)
             {
-                _cancellationToken.ThrowIfCancellationRequested();
+                var ex = task.Exception;
+                Console.Write(ex?.Message);
             }
+        }
+
+        private async Task HandleCameraChange()
+        {
+            _cancellationToken.ThrowIfCancellationRequested();
             _cameraService.SetCurrentCamera(_selectedCamera);
             CameraName = _selectedCamera.Name;
             OnPropertyChanged(nameof(CameraName));
             OnPropertyChanged(nameof(SelectedCamera));
-            App.Current.Dispatcher.BeginInvoke(() => {
-                Task.Run(() => PlayCamera(_cancellationToken));
-            }
-            );
+            await PlayCamera(_cancellationToken);
         }
 
         private bool InitializeYolo()
         {
             var status = _yoloModelService.LoadYoloModel(_modelPath);
-            
+
             if (status)
             {
                 _yoloModelService.LoadLabels();
@@ -113,28 +114,25 @@ namespace YoloV7WebCamInference.ViewModels
         private async Task PlayCamera(CancellationToken cancelToken)
         {
             SetFps();
-            while (!_cameraService.IsCaptureDisposed())
+            while (!_cameraService.IsCaptureDisposed() && !cancelToken.IsCancellationRequested)
             {
-                _isStopped = false;
                 var frame = _cameraService.GetFrame();
                 if (frame.Empty())
                 {
                     break;
                 }
-                if(cancelToken.IsCancellationRequested)
-                {
-                    await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() =>
-                    _isStopped = true));
-                    break;
-                }
 
-                await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() =>
+                await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(() =>
                 {
                     Thread.CurrentThread.Priority = ThreadPriority.Highest;
                     SourceImage = _yoloModelService.PredictAndDraw(frame.ToBitmap());
                     OnPropertyChanged(nameof(SourceImage));
                 }));
             }
+            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() =>
+            {
+                _cameraService.GetCurrentCamera().VideoCapture.Release();
+            }));
         }
     }
 }
