@@ -1,16 +1,20 @@
 ﻿using OpenCvSharp;
+using System.Collections.Generic;
+using YoloV7WebCamInference.Models;
 
 namespace YoloV7WebCamInference.Interfaces
 {
     public interface ICameraService
     {
-        bool InitializeCamera();
+        string GetCurrentCameraName();
 
-        string GetCameraName();
+        List<Camera> GetAllCameras();
+
+        Camera GetCurrentCamera();
+
+        void SetCurrentCamera(Camera? camera);
 
         Mat GetFrame();
-
-        string GetFps();
 
         void SetFps(int fps);
 

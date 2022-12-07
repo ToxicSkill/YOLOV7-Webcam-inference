@@ -11,7 +11,7 @@ namespace YoloV7WebCamInference
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private const string ModelPath = "ModelPath\\yolov7-tiny.onnx";
+        private const string ModelPath = "C:\\Users\\Adam Poler\\Desktop\\WŁASNE_PROGRAMY\\YOLOV7-Webcam-inference2\\yolov7-tiny.onnx";
 
         public App()
         {
