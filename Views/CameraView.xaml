@@ -7,11 +7,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920">
     <Grid Background="Black">
-        <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="325, 0, 0 ,0" Content="{Binding CameraName}" Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light"/>
-        <ComboBox ItemsSource="{Binding AvailableCameras}"  DisplayMemberPath="Name" SelectedItem="{Binding SelectedCamera}" Width="130" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="98,7,0,0"/>
+        <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300, 0, 0 ,0" Content="{Binding CameraName}" Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light" HorizontalContentAlignment="Left"/>
+        <ComboBox ItemsSource="{Binding AvailableCameras}"  DisplayMemberPath="Name" SelectedItem="{Binding SelectedCamera}" Width="180" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="98,7,0,0"/>
         <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="55, 25, 0 ,0" Content="{Binding Fps}" Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light"/>
         <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0, 25, 0 ,0" Content="Fps: " Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light"/>
         <Label HorizontalAlignment="Left" VerticalAlignment="Top" Content="Camera: " Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light"/>
-        <Image Margin="70" Source="{Binding SourceImage}" RenderOptions.BitmapScalingMode="LowQuality" RenderOptions.CachingHint="Unspecified" RenderOptions.EdgeMode="Unspecified" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Image Margin="100, 70, 100, 70" Source="{Binding SourceImage}" RenderOptions.BitmapScalingMode="LowQuality" RenderOptions.CachingHint="Unspecified" RenderOptions.EdgeMode="Unspecified" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </UserControl>

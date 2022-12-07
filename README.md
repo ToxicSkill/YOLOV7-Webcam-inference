@@ -1,4 +1,11 @@
 # YOLOV7-Webcam-inference
+
+<div align="center">
+    <a href="./">
+        <img src="./Figure/RealTimePredictions.png" width="75%"/>
+    </a>
+</div>
+
 Simple WPF program for webcam inference with yoloV7 models.
 
 Implemenation ONNX [yolov7](https://github.com/WongKinYiu/yolov7) model inference with webcam cameras.
