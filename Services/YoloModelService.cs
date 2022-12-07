@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Yolo;
@@ -39,19 +37,7 @@ namespace YoloV7WebCamInference.Services
                                 new PointF(x, y));
             }
 
-            return Convert(image);
-        }
-        private static WriteableBitmap Convert(Image img)
-        {
-            using var memory = new MemoryStream();
-            img.Save(memory, ImageFormat.Bmp);
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            memory.Seek(0, SeekOrigin.Begin);
-            bitmapImage.StreamSource = memory;
-            bitmapImage.EndInit();
-            return new(bitmapImage);
+            return Helpers.BitmapHelper.Convert(image);
         }
     }
 }
