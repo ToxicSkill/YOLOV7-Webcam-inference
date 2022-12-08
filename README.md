@@ -8,7 +8,7 @@
 
 Simple WPF program for webcam inference with yoloV7 models.
 
-Implemenation of ONNX model[yolov7](https://github.com/WongKinYiu/yolov7) inference with webcam cameras.
+Implemenation of ONNX model [yolov7](https://github.com/WongKinYiu/yolov7) inference with webcam cameras.
 
 ## What's new 🤗 
 - **Multicamera support**
