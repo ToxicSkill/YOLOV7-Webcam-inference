@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,35 +8,32 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.ML.OnnxRuntime;
-using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace YoloV7WebCamInference.Yolo
 {
     public class YoloV7 : IDisposable
     {
         private readonly InferenceSession _inferenceSession;
-
-        private readonly YoloModel _model = new ();
-
+        private readonly YoloModel _model = new YoloModel();
         private readonly MD5 _md5;
 
-        public YoloV7(string ModelPath, bool useCuda = false)
+        public YoloV7(string modelPath, bool useCuda = false)
         {
             _md5 = MD5.Create();
             if (useCuda)
             {
-                SessionOptions options = SessionOptions.MakeSessionOptionWithCudaProvider();
-                _inferenceSession = new (ModelPath, options);
+                SessionOptions opts = SessionOptions.MakeSessionOptionWithCudaProvider();
+                _inferenceSession = new InferenceSession(modelPath, opts);
             }
             else
             {
-                SessionOptions options2 = new ();
-                _inferenceSession = new (ModelPath, options2);
+                SessionOptions opts = new();
+                _inferenceSession = new InferenceSession(modelPath, opts);
             }
 
-            GetInputDetails();
-            GetOutputDetails();
+            // Get model info
+            get_input_details();
+            get_output_details();
         }
 
         public void SetupLabels(string[] labels)
@@ -52,18 +51,8 @@ namespace YoloV7WebCamInference.Yolo
 
         public void SetupYoloDefaultLabels()
         {
-            string[] labels = new string[80]
-            {
-                "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light",
-                "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow",
-                "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee",
-                "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle",
-                "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange",
-                "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed",
-                "dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven",
-                "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"
-            };
-            SetupLabels(labels);
+            var s = new string[] { "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush" };
+            SetupLabels(s);
         }
 
         public List<YoloPrediction> Predict(Image image)
@@ -73,60 +62,79 @@ namespace YoloV7WebCamInference.Yolo
 
         private List<YoloPrediction> ParseDetect(DenseTensor<float> output, Image image)
         {
-            DenseTensor<float> output2 = output;
-            ConcurrentBag<YoloPrediction> result = new ConcurrentBag<YoloPrediction>();
-            int width = image.Width;
-            int height = image.Height;
-            int num = width;
-            int num2 = height;
-            float num3 = (float)_model.Width / (float)num;
-            float num4 = (float)_model.Height / (float)num2;
-            float val = num3;
-            float val2 = num4;
-            float gain = Math.Min(val, val2);
-            num3 = ((float)_model.Width - (float)num * gain) / 2f;
-            float num5 = ((float)_model.Height - (float)num2 * gain) / 2f;
-            float xPad = num3;
-            float yPad = num5;
-            Parallel.For(0, output2.Dimensions[0], delegate (int i)
+            var result = new ConcurrentBag<YoloPrediction>();
+
+            var (w, h) = (image.Width, image.Height); // image w and h
+            var (xGain, yGain) = (_model.Width / (float)w, _model.Height / (float)h); // x, y gains
+            var gain = Math.Min(xGain, yGain); // gain = resized / original
+
+            var (xPad, yPad) = ((_model.Width - w * gain) / 2, (_model.Height - h * gain) / 2); // left, right pads
+
+            Parallel.For(0, output.Dimensions[0], i =>
             {
-                YoloPrediction yoloPrediction = new YoloPrediction(_model.Labels[(int)output2[new int[2] { i, 5 }]], output2[new int[2] { 0, 6 }]);
-                float num6 = (output2[new int[2] { i, 1 }] - xPad) / gain;
-                float num7 = (output2[new int[2] { i, 2 }] - yPad) / gain;
-                float num8 = (output2[new int[2] { i, 3 }] - xPad) / gain;
-                float num9 = (output2[new int[2] { i, 4 }] - yPad) / gain;
-                yoloPrediction.Rectangle = new RectangleF(num6, num7, num8 - num6, num9 - num7);
-                result.Add(yoloPrediction);
+                var span = output.Buffer.Span.Slice(i * output.Strides[0]);
+                var label = _model.Labels[(int)span[5]];
+                var prediction = new YoloPrediction(label, span[6]);
+
+                var xMin = (span[1] - xPad) / gain;
+                var yMin = (span[2] - yPad) / gain;
+                var xMax = (span[3] - xPad) / gain;
+                var yMax = (span[4] - yPad) / gain;
+
+                //install package TensorFlow.Net,SciSharp.TensorFlow.Redist 安装这两个包可以用numpy 进行计算
+                //var box = np.array(item.GetValue(1), item.GetValue(2), item.GetValue(3), item.GetValue(4));
+                //var tmp =  np.array(xPad, yPad,xPad, yPad) ;
+                //box -= tmp;
+                //box /= gain;
+
+                prediction.Rectangle = new RectangleF(xMin, yMin, xMax - xMin, yMax - yMin);
+                result.Add(prediction);
             });
+
             return result.ToList();
         }
 
         private DenseTensor<float>[] Inference(Image img)
         {
-            var bitmap = ((img.Width == _model.Width && img.Height == _model.Height) ? new Bitmap(img) : Utils.ResizeImage(img, _model.Width, _model.Height));
-            var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("images", Utils.ExtractPixels(bitmap)) };
-            var source = _inferenceSession.Run(inputs);
-            var list = new List<DenseTensor<float>>();
-            string[] outputs = _model.Outputs;
-            foreach (string item in outputs)
+            Bitmap resized;
+
+            if (img.Width != _model.Width || img.Height != _model.Height)
             {
-                list.Add((DenseTensor<float>)source.First((DisposableNamedOnnxValue x) => x.Name == item).Value);
+                resized = Utils.ResizeImage(img, _model.Width, _model.Height); // fit image size to specified input size
+            }
+            else
+            {
+                resized = new Bitmap(img);
             }
 
-            return list.ToArray();
+            var inputs = new List<NamedOnnxValue> // add image as onnx input
+            {
+                NamedOnnxValue.CreateFromTensor("images", Utils.ExtractPixels2(resized))
+            };
+
+            var result = _inferenceSession.Run(inputs); // run inference
+
+            var output = new List<DenseTensor<float>>();
+
+            foreach (var item in _model.Outputs) // add outputs for processing
+            {
+                output.Add(result.First(x => x.Name == item).Value as DenseTensor<float>);
+            };
+
+            return output.ToArray();
         }
 
-        private void GetInputDetails()
+        private void get_input_details()
         {
             _model.Height = _inferenceSession.InputMetadata["images"].Dimensions[2];
             _model.Width = _inferenceSession.InputMetadata["images"].Dimensions[3];
         }
 
-        private void GetOutputDetails()
+        private void get_output_details()
         {
             _model.Outputs = _inferenceSession.OutputMetadata.Keys.ToArray();
             _model.Dimensions = _inferenceSession.OutputMetadata[_model.Outputs[0]].Dimensions[1];
-            _model.UseDetect = !_model.Outputs.Any((string x) => x == "score");
+            _model.UseDetect = !(_model.Outputs.Any(x => x == "score"));
         }
 
         private Color GetLabelColor(string? name)

@@ -48,6 +48,7 @@ namespace YoloV7WebCamInference
         {
             return new YoloModelService();
         }
+
         public static ICameraService CreateCameraService(IServiceProvider provider)
         {
             return new CameraService();

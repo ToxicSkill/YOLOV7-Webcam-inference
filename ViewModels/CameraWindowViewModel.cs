@@ -1,10 +1,8 @@
-﻿using OpenCvSharp.Extensions;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Models;
@@ -13,7 +11,9 @@ namespace YoloV7WebCamInference.ViewModels
 {
     public partial class CameraWindowViewModel : ViewModelBase
     {
-        private CancellationToken _cancellationToken;
+        private System.Windows.Media.Imaging.WriteableBitmap _sourceImage;
+
+        private CancellationTokenSource _cancellationToken;
 
         private Camera _selectedCamera;
 
@@ -37,7 +37,15 @@ namespace YoloV7WebCamInference.ViewModels
 
         public string Fps { get; private set; }
 
-        public WriteableBitmap SourceImage { get; private set; }
+        public System.Windows.Media.Imaging.WriteableBitmap SourceImage
+        {
+            get => _sourceImage;
+            private set
+            {
+                _sourceImage = value;
+                OnPropertyChanged(nameof(SourceImage));
+            }
+        }
 
         private readonly IYoloModelService _yoloModelService;
 
@@ -49,7 +57,9 @@ namespace YoloV7WebCamInference.ViewModels
         {
             _yoloModelService = yoloModelService;
             _cameraService = cameraService;
+            _cancellationToken = new CancellationTokenSource();
             _modelPath = modelPath;
+
             AvailableCameras = new(_cameraService.GetAllCameras());
 
             if (!InitializeYolo() || !InitializeCamera())
@@ -72,12 +82,11 @@ namespace YoloV7WebCamInference.ViewModels
 
         private async Task HandleCameraChange()
         {
-            _cancellationToken.ThrowIfCancellationRequested();
             _cameraService.SetCurrentCamera(_selectedCamera);
             CameraName = _selectedCamera.Name;
             OnPropertyChanged(nameof(CameraName));
             OnPropertyChanged(nameof(SelectedCamera));
-            await PlayCamera(_cancellationToken);
+            await PlayCamera();
         }
 
         private bool InitializeYolo()
@@ -111,28 +120,31 @@ namespace YoloV7WebCamInference.ViewModels
             OnPropertyChanged(nameof(Fps));
         }
 
-        private async Task PlayCamera(CancellationToken cancelToken)
+        private async Task PlayCamera()
         {
-            SetFps();
-            while (!_cameraService.IsCaptureDisposed() && !cancelToken.IsCancellationRequested)
+            try
             {
-                var frame = _cameraService.GetFrame();
-                if (frame.Empty())
+                while (true)
                 {
-                    break;
+                    _cancellationToken.Token.ThrowIfCancellationRequested();
+                    await Application.Current.Dispatcher.BeginInvoke(() =>
+                    {
+                        SourceImage = _yoloModelService.PredictAndDraw(_cameraService.GetFrame());
+                    }, DispatcherPriority.Render);
+                    _cancellationToken.Token.ThrowIfCancellationRequested();
+                    await Task.Delay(20);
                 }
-
-                await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(() =>
-                {
-                    Thread.CurrentThread.Priority = ThreadPriority.Highest;
-                    SourceImage = _yoloModelService.PredictAndDraw(frame.ToBitmap());
-                    OnPropertyChanged(nameof(SourceImage));
-                }));
             }
-            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() =>
+            catch (OperationCanceledException)
             {
-                _cameraService.GetCurrentCamera().VideoCapture.Release();
-            }));
+                RestartCancelToken();
+            }
+        }
+
+        private void RestartCancelToken()
+        {
+            _cancellationToken.Dispose();
+            _cancellationToken = new CancellationTokenSource();
         }
     }
 }

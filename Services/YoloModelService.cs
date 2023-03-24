@@ -1,5 +1,7 @@
-﻿using System;
-using System.Drawing;
+﻿using OpenCvSharp;
+using OpenCvSharp.Extensions;
+using OpenCvSharp.WpfExtensions;
+using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Yolo;
@@ -24,20 +26,32 @@ namespace YoloV7WebCamInference.Services
             }
         }
 
-        public WriteableBitmap PredictAndDraw(Image image)
+        public WriteableBitmap PredictAndDraw(Mat mat)
         {
-            using var graphics = Graphics.FromImage(image);
-            foreach (var prediction in _yolov7.Predict(image))
-            {
-                double score = Math.Round(prediction.Score, 2);
-                graphics.DrawRectangles(new Pen(prediction.Label.Color, 1), new[] { prediction.Rectangle });
-                var (x, y) = (prediction.Rectangle.X - 3, prediction.Rectangle.Y - 23);
-                graphics.DrawString($"{prediction.Label.Name} ({score})",
-                                new Font("Consolas", 16, GraphicsUnit.Pixel), new SolidBrush(prediction.Label.Color),
-                                new PointF(x, y));
-            }
+            using var image = mat.ToBitmap(System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            var predicitons = _yolov7.Predict(image);
+            return DrawPredicitons(mat, predicitons).ToWriteableBitmap();
+        }
 
-            return Helpers.BitmapHelper.Convert(image);
+        private Mat DrawPredicitons(Mat mat, List<YoloPrediction> predicitons)
+        {
+            foreach (var prediction in predicitons)
+            {
+                var color = new Scalar(
+                    prediction.Label.Color.R,
+                    prediction.Label.Color.G,
+                    prediction.Label.Color.B);
+                var rect = new Rect(
+                    (int)prediction.Rectangle.X,
+                    (int)prediction.Rectangle.Y,
+                    (int)prediction.Rectangle.Width,
+                    (int)prediction.Rectangle.Height);
+                Cv2.Rectangle(mat, rect, color);
+                Cv2.PutText(mat, prediction.Label.Name, new Point(
+                    prediction.Rectangle.X - 7,
+                    prediction.Rectangle.Y - 23), HersheyFonts.HersheyPlain, 1, color, 2);
+            }
+            return mat;
         }
     }
 }

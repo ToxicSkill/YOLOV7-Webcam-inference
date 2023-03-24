@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using OpenCvSharp;
 using System.Windows.Media.Imaging;
 
 namespace YoloV7WebCamInference.Interfaces
@@ -9,6 +9,6 @@ namespace YoloV7WebCamInference.Interfaces
 
         void LoadLabels(string pathToLabelsFile = "");
 
-        WriteableBitmap PredictAndDraw(Image image);
+        WriteableBitmap PredictAndDraw(Mat image);
     }
 }
