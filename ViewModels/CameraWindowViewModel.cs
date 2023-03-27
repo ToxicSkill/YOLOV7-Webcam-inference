@@ -62,7 +62,7 @@ namespace YoloV7WebCamInference.ViewModels
 
             AvailableCameras = new(_cameraService.GetAllCameras());
 
-            var isYoloInitialized = false;// InitializeYolo();
+            var isYoloInitialized = InitializeYolo();
             var isCameraInitialized = InitializeCamera();
             if (!isYoloInitialized && !isCameraInitialized)
             {
