@@ -62,12 +62,26 @@ namespace YoloV7WebCamInference.ViewModels
 
             AvailableCameras = new(_cameraService.GetAllCameras());
 
-            if (!InitializeYolo() || !InitializeCamera())
+            var isYoloInitialized = false;// InitializeYolo();
+            var isCameraInitialized = InitializeCamera();
+            if (!isYoloInitialized && !isCameraInitialized)
             {
-                CameraName = "Failed to initialize yolo model or camera";
-                App.Current.Shutdown();
+                MessageBox.Show("Failed to initialize yolo model and camera");
+            }
+            else if (!isYoloInitialized)
+            {
+                MessageBox.Show("Failed to initialize yolo model");
+            }
+            else if (!isCameraInitialized)
+            {
+                MessageBox.Show("Failed to initialize camera(s)");
             }
 
+
+            if (!isYoloInitialized || !isCameraInitialized)
+            {
+                App.Current.Shutdown();
+            }
             OnPropertyChanged(nameof(AvailableCameras));
         }
 
