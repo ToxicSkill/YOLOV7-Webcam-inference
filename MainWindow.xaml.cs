@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows.Controls;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls.Interfaces;
@@ -33,18 +32,6 @@ namespace YoloV7WebCamInference
             navigationService.SetNavigationControl(RootNavigation);
             snackbarService.SetSnackbarControl(RootSnackbar);
             themeService.SetTheme(ThemeType.Dark);
-        }
-
-        public void SetTheme(BackgroundType value = BackgroundType.Mica)
-        {
-            try
-            {
-                this.WindowBackdropType = value;
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(e.Message);
-            }
         }
 
         public Frame GetFrame()

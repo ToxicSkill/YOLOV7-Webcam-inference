@@ -32,14 +32,21 @@ namespace YoloV7WebCamInference.ViewModels
         {
             MenuItems.Add(new NavigationItem()
             {
+                Icon = SymbolRegular.Home20,
+                PageTag = "home",
+                Cache = true,
+                Content = "Main",
+                PageType = typeof(MainWindow)
+            });
+            MenuItems.Add(new NavigationSeparator());
+            MenuItems.Add(new NavigationItem()
+            {
                 Icon = SymbolRegular.Camera20,
                 PageTag = "camera",
                 Cache = true,
                 Content = "Camera",
                 PageType = typeof(CameraView)
             });
-            MenuItems.Add(new NavigationSeparator());
-            MenuItems.Add(new NavigationItem());
         }
     }
 }
