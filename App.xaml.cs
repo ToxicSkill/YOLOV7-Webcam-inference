@@ -29,8 +29,10 @@ namespace YoloV7WebCamInference
             services.AddSingleton<ICameraService, CameraService>();
             services.AddSingleton<CameraViewModel>();
             services.AddSingleton<CameraView>();
-            services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<INavigationWindow, MainWindow>();
+            services.AddSingleton<DashboardViewModel>();
+            services.AddSingleton<DashboardView>();
+            services.AddScoped<MainWindowViewModel>();
+            services.AddScoped<INavigationWindow, MainWindow>();
         }).Build();
 
         protected override async void OnStartup(StartupEventArgs e)

@@ -37,26 +37,26 @@ namespace YoloV7WebCamInference.ViewModels
 
             AvailableCameras = new(_cameraService.GetAllCameras());
 
-            //var isYoloInitialized = InitializeYolo();
-            //var isCameraInitialized = InitializeCamera();
-            //if (!isYoloInitialized && !isCameraInitialized)
-            //{
-            //    MessageBox.Show("Failed to initialize yolo model and camera");
-            //}
-            //else if (!isYoloInitialized)
-            //{
-            //    MessageBox.Show("Failed to initialize yolo model");
-            //}
-            //else if (!isCameraInitialized)
-            //{
-            //    MessageBox.Show("Failed to initialize camera(s)");
-            //}
+            var isYoloInitialized = InitializeYolo();
+            var isCameraInitialized = InitializeCamera();
+            if (!isYoloInitialized && !isCameraInitialized)
+            {
+                MessageBox.Show("Failed to initialize yolo model and camera");
+            }
+            else if (!isYoloInitialized)
+            {
+                MessageBox.Show("Failed to initialize yolo model");
+            }
+            else if (!isCameraInitialized)
+            {
+                MessageBox.Show("Failed to initialize camera(s)");
+            }
 
 
-            //if (!isYoloInitialized || !isCameraInitialized)
-            //{
-            //    App.Current.Shutdown();
-            //}
+            if (!isYoloInitialized || !isCameraInitialized)
+            {
+                App.Current.Shutdown();
+            }
         }
 
         private static void OnAsyncFailed(Task task)
@@ -111,7 +111,7 @@ namespace YoloV7WebCamInference.ViewModels
 
         private async Task PlayCamera()
         {
-            var fpsMs = (int)(1000 / SelectedCamera.Fps);
+            var fpsMs = (int)(1000 / 6);// SelectedCamera.Fps);
             long timestamp = 0;
             try
             {
@@ -122,9 +122,11 @@ namespace YoloV7WebCamInference.ViewModels
                     await Application.Current.Dispatcher.BeginInvoke(() =>
                     {
                         SelectedCamera.ImageSource = _yoloModelService.PredictAndDraw(_cameraService.GetFrame());
+                        //SelectedCamera.ImageSource = _cameraService.GetFrame().ToWriteableBitmap();
                     }, DispatcherPriority);
                     _cancellationToken.Token.ThrowIfCancellationRequested();
-                    await Task.Delay(Math.Clamp(fpsMs - Stopwatch.GetElapsedTime(timestamp, Stopwatch.GetTimestamp()).Milliseconds, 0, fpsMs));
+                    var timeMs = Stopwatch.GetElapsedTime(timestamp, Stopwatch.GetTimestamp()).Milliseconds;
+                    await Task.Delay(Math.Clamp(fpsMs - timeMs, 0, fpsMs));
                 }
             }
             catch (OperationCanceledException)

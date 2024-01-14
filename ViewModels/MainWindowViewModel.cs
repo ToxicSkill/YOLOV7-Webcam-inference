@@ -36,7 +36,7 @@ namespace YoloV7WebCamInference.ViewModels
                 PageTag = "home",
                 Cache = true,
                 Content = "Main",
-                PageType = typeof(MainWindow)
+                PageType = typeof(DashboardView)
             });
             MenuItems.Add(new NavigationSeparator());
             MenuItems.Add(new NavigationItem()

@@ -14,6 +14,8 @@ namespace YoloV7WebCamInference.Views
         public CameraView(CameraViewModel viewModel)
         {
             ViewModel = viewModel;
+            InitializeComponent();
+            DataContext = ViewModel;
         }
     }
 }

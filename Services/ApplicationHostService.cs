@@ -63,7 +63,7 @@ public class ApplicationHostService : IHostedService
             _navigationWindow = _serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow;
             _navigationWindow!.ShowWindow();
 
-            _navigationWindow.Navigate(typeof(CameraView));
+            _navigationWindow.Navigate(typeof(DashboardView));
         }
 
         await Task.CompletedTask;
