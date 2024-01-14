@@ -1,15 +1,19 @@
-﻿using System.Windows.Controls;
+﻿using Wpf.Ui.Common.Interfaces;
+using YoloV7WebCamInference.ViewModels;
 
 namespace YoloV7WebCamInference.Views
 {
-    /// <summary>
-    /// Interaction logic for CameraView.xaml
-    /// </summary>
-    public partial class CameraView : UserControl
+    public partial class CameraView : INavigableView<CameraViewModel>
     {
-        public CameraView()
+
+        public CameraViewModel ViewModel
         {
-            InitializeComponent();
+            get;
+        }
+
+        public CameraView(CameraViewModel viewModel)
+        {
+            ViewModel = viewModel;
         }
     }
 }

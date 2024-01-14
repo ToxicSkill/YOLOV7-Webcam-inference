@@ -1,20 +1,20 @@
-﻿using OpenCvSharp;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using OpenCvSharp;
+using System.Windows.Media.Imaging;
 
 namespace YoloV7WebCamInference.Models
 {
-    public class Camera
+    public partial class Camera(string name, VideoCapture videoCapture) : ObservableObject
     {
-        public string Name { get; set; }
+        [ObservableProperty]
+        public WriteableBitmap imageSource;
 
-        public VideoCapture VideoCapture { get; set; }
+        [ObservableProperty]
+        public string name = name;
 
-        public double Fps { get; set; }
+        [ObservableProperty]
+        public double fps = videoCapture.Fps;
 
-        public Camera(string name, VideoCapture videoCapture)
-        {
-            Name = name;
-            VideoCapture = videoCapture;
-            Fps = videoCapture.Fps;
-        }
+        public VideoCapture VideoCapture { get; set; } = videoCapture;
     }
 }

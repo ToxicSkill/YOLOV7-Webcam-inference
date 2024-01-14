@@ -1,13 +1,68 @@
-﻿namespace YoloV7WebCamInference
+﻿using System;
+using System.Diagnostics;
+using System.Windows.Controls;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls.Interfaces;
+using Wpf.Ui.Mvvm.Contracts;
+using YoloV7WebCamInference.ViewModels;
+
+namespace YoloV7WebCamInference
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : System.Windows.Window
+    public partial class MainWindow : INavigationWindow
     {
-        public MainWindow()
+        public MainWindowViewModel ViewModel
         {
-            InitializeComponent();
+            get;
         }
+
+        public MainWindow(MainWindowViewModel viewModel,
+            INavigationService navigationService,
+            IPageService pageService,
+            ISnackbarService snackbarService,
+            IThemeService themeService)
+        {
+            Watcher.Watch(this);
+            ViewModel = viewModel;
+            DataContext = ViewModel;
+            InitializeComponent();
+
+            SetPageService(pageService);
+            navigationService.SetNavigationControl(RootNavigation);
+            snackbarService.SetSnackbarControl(RootSnackbar);
+            themeService.SetTheme(ThemeType.Dark);
+        }
+
+        public void SetTheme(BackgroundType value = BackgroundType.Mica)
+        {
+            try
+            {
+                this.WindowBackdropType = value;
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e.Message);
+            }
+        }
+
+        public Frame GetFrame()
+            => RootFrame;
+
+        public INavigation GetNavigation()
+            => RootNavigation;
+
+        public bool Navigate(Type pageType)
+            => RootNavigation.Navigate(pageType);
+
+        public void SetPageService(IPageService pageService)
+            => RootNavigation.PageService = pageService;
+
+        public void ShowWindow()
+            => Show();
+
+        public void CloseWindow()
+            => Close();
     }
 }

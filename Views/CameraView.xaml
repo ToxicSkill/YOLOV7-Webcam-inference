@@ -1,17 +1,19 @@
-﻿<UserControl x:Class="YoloV7WebCamInference.Views.CameraView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ui:UiPage x:Class="YoloV7WebCamInference.Views.CameraView"
+           xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:viewmodels="clr-namespace:YoloV7WebCamInference.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:CameraWindowViewModel}"
+             xmlns:viewmodels="clr-namespace:YoloV7WebCamInference.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:CameraViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920">
     <Grid Background="Black">
-        <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300, 0, 0 ,0" Content="{Binding CameraName}" Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light" HorizontalContentAlignment="Left"/>
+        <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300, 0, 0 ,0" Content="{Binding SelectedCamera.Name}" Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light" HorizontalContentAlignment="Left"/>
         <ComboBox ItemsSource="{Binding AvailableCameras}"  DisplayMemberPath="Name" SelectedItem="{Binding SelectedCamera}" Width="180" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="98,7,0,0"/>
-        <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="55, 25, 0 ,0" Content="{Binding Fps}" Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light"/>
+        <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="55, 25, 0 ,0" Content="{Binding SelectedCamera.Fps}" Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light"/>
         <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0, 25, 0 ,0" Content="Fps: " Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light"/>
         <Label HorizontalAlignment="Left" VerticalAlignment="Top" Content="Camera: " Foreground="White" FontSize="22" FontFamily="Cascadia Mono Light"/>
-        <Image Margin="100, 70, 100, 70" Source="{Binding SourceImage}" RenderOptions.BitmapScalingMode="LowQuality" RenderOptions.CachingHint="Unspecified" RenderOptions.EdgeMode="Unspecified" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Image Margin="100, 70, 100, 70" Source="{Binding SelectedCamera.ImageSource}" RenderOptions.BitmapScalingMode="LowQuality" RenderOptions.CachingHint="Cache" RenderOptions.EdgeMode="Unspecified" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
-</UserControl>
+</ui:UiPage>
