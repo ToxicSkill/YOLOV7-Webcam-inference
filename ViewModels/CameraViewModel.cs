@@ -126,6 +126,7 @@ namespace YoloV7WebCamInference.ViewModels
                     }, DispatcherPriority);
                     _cancellationToken.Token.ThrowIfCancellationRequested();
                     var timeMs = Stopwatch.GetElapsedTime(timestamp, Stopwatch.GetTimestamp()).Milliseconds;
+                    SelectedCamera.Fps = 1000 / timeMs;
                     await Task.Delay(Math.Clamp(fpsMs - timeMs, 0, fpsMs));
                 }
             }

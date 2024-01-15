@@ -13,7 +13,10 @@ namespace YoloV7WebCamInference.Models
         public string name = name;
 
         [ObservableProperty]
-        public double fps = videoCapture.Fps;
+        public double fps;
+
+        [ObservableProperty]
+        public double currentFps = videoCapture.Fps;
 
         public VideoCapture VideoCapture { get; set; } = videoCapture;
     }
