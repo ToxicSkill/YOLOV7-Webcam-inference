@@ -26,10 +26,14 @@ namespace YoloV7WebCamInference.Services
             }
         }
 
-        public WriteableBitmap PredictAndDraw(Mat mat)
+        public WriteableBitmap PredictAndDraw(YoloV7WebCamInference.Models.Camera camera, Mat mat)
         {
             using var image = mat.ToBitmap(System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             var predicitons = _yolov7.Predict(image);
+            foreach (var item in predicitons)
+            {
+                camera.CameraDetectionsQueue.Enqueue(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), Scalar.Black));
+            }
             return DrawPredicitons(mat, predicitons).ToWriteableBitmap();
         }
 

@@ -121,7 +121,7 @@ namespace YoloV7WebCamInference.ViewModels
                     timestamp = Stopwatch.GetTimestamp();
                     await Application.Current.Dispatcher.BeginInvoke(() =>
                     {
-                        SelectedCamera.ImageSource = _yoloModelService.PredictAndDraw(_cameraService.GetFrame());
+                        SelectedCamera.ImageSource = _yoloModelService.PredictAndDraw(SelectedCamera, _cameraService.GetFrame());
                         //SelectedCamera.ImageSource = _cameraService.GetFrame().ToWriteableBitmap();
                     }, DispatcherPriority);
                     _cancellationToken.Token.ThrowIfCancellationRequested();
