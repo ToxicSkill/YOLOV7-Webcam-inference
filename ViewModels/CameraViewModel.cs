@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using OpenCvSharp;
+using OpenCvSharp.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -7,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using YoloV7WebCamInference.Interfaces;
-using YoloV7WebCamInference.Models;
+using Camera = YoloV7WebCamInference.Models.Camera;
 
 namespace YoloV7WebCamInference.ViewModels
 {
@@ -111,7 +113,7 @@ namespace YoloV7WebCamInference.ViewModels
 
         private async Task PlayCamera()
         {
-            var fpsMs = (int)(1000 / 6);// SelectedCamera.Fps);
+            var fpsMs = (int)(1000 / 1);// SelectedCamera.Fps);
             long timestamp = 0;
             try
             {
@@ -119,10 +121,21 @@ namespace YoloV7WebCamInference.ViewModels
                 {
                     _cancellationToken.Token.ThrowIfCancellationRequested();
                     timestamp = Stopwatch.GetTimestamp();
+                    using var mat = _cameraService.GetFrame();
+                    using var image = mat.ToBitmap(System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                    var predicitons = _yoloModelService.Predict(image);
                     await Application.Current.Dispatcher.BeginInvoke(() =>
                     {
-                        SelectedCamera.ImageSource = _yoloModelService.PredictAndDraw(SelectedCamera, _cameraService.GetFrame());
-                        //SelectedCamera.ImageSource = _cameraService.GetFrame().ToWriteableBitmap();
+
+                        SelectedCamera.ImageSource = _yoloModelService.Draw(mat, predicitons);
+                        //SelectedCamera.ImageSource = _cameraService.GetFrame().ToWriteableBitmap();foreach (var item in predicitons)
+                        if (predicitons != null)
+                        {
+                            foreach (var item in predicitons)
+                            {
+                                SelectedCamera.CameraDetectionsQueue.Enqueue(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), Scalar.Black));
+                            }
+                        }
                     }, DispatcherPriority);
                     _cancellationToken.Token.ThrowIfCancellationRequested();
                     var timeMs = Stopwatch.GetElapsedTime(timestamp, Stopwatch.GetTimestamp()).Milliseconds;

@@ -115,7 +115,7 @@
                            FontWeight="Regular" />
                 <ListView Grid.Row="1" HorizontalAlignment="Stretch"
                           x:Name="detectionsListView"
-                          ItemsSource="{Binding SelectedCamera.CameraDetectionsQueue, Mode=OneWay, IsAsync=True}">
+                          ItemsSource="{Binding SelectedCamera.CameraDetectionsQueue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -123,8 +123,9 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Label}" />
-                                <TextBlock Grid.Column="2" Text="{Binding Score}" />
+                                <TextBlock Text="{Binding Label, Mode=OneTime}" />
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Score, Mode=OneTime}" />
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>

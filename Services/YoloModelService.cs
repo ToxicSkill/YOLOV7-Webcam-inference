@@ -1,7 +1,7 @@
 ﻿using OpenCvSharp;
-using OpenCvSharp.Extensions;
 using OpenCvSharp.WpfExtensions;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Yolo;
@@ -26,20 +26,18 @@ namespace YoloV7WebCamInference.Services
             }
         }
 
-        public WriteableBitmap PredictAndDraw(YoloV7WebCamInference.Models.Camera camera, Mat mat)
+        public List<YoloPrediction>? Predict(Image image)
         {
-            using var image = mat.ToBitmap(System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            var predicitons = _yolov7.Predict(image);
-            foreach (var item in predicitons)
-            {
-                camera.CameraDetectionsQueue.Enqueue(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), Scalar.Black));
-            }
-            return DrawPredicitons(mat, predicitons).ToWriteableBitmap();
+            return _yolov7.Predict(image);
         }
 
-        private Mat DrawPredicitons(Mat mat, List<YoloPrediction> predicitons)
+        public WriteableBitmap Draw(Mat mat, List<YoloPrediction>? predictions)
         {
-            foreach (var prediction in predicitons)
+            if (predictions == null)
+            {
+                return mat.ToWriteableBitmap();
+            }
+            foreach (var prediction in predictions)
             {
                 var color = new Scalar(
                     prediction.Label.Color.R,
@@ -51,11 +49,11 @@ namespace YoloV7WebCamInference.Services
                     (int)prediction.Rectangle.Width,
                     (int)prediction.Rectangle.Height);
                 Cv2.Rectangle(mat, rect, color);
-                Cv2.PutText(mat, prediction.Label.Name, new Point(
+                Cv2.PutText(mat, prediction.Label.Name, new OpenCvSharp.Point(
                     prediction.Rectangle.X - 7,
                     prediction.Rectangle.Y - 23), HersheyFonts.HersheyPlain, 1, color, 2);
             }
-            return mat;
+            return mat.ToWriteableBitmap();
         }
     }
 }

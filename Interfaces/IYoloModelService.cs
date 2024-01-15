@@ -1,5 +1,8 @@
 ﻿using OpenCvSharp;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Media.Imaging;
+using YoloV7WebCamInference.Yolo;
 
 namespace YoloV7WebCamInference.Interfaces
 {
@@ -9,6 +12,8 @@ namespace YoloV7WebCamInference.Interfaces
 
         void LoadLabels(string pathToLabelsFile = "");
 
-        WriteableBitmap PredictAndDraw(YoloV7WebCamInference.Models.Camera camera, Mat mat);
+        List<YoloPrediction>? Predict(Image image);
+
+        WriteableBitmap Draw(Mat mat, List<YoloPrediction>? predictions);
     }
 }
