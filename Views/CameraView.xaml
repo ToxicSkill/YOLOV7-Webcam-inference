@@ -115,15 +115,12 @@
             <Grid Grid.Column="2" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
-                    <RowDefinition Height="2110" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <TextBlock HorizontalAlignment="Center"
                            Text="Devices"
                            FontSize="24"
-                           FontWeight="Regular" />
-                <ui:Button HorizontalAlignment="Stretch"
-                           VerticalAlignment="Stretch"
-                           Command="{Binding AddCommand}" />
+                           FontWeight="Regular" /> 
                 <ListView Grid.Row="1"
                           HorizontalAlignment="Center"
                           x:Name="detectionsListView" 

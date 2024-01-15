@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using YoloV7WebCamInference.Interfaces;
-using YoloV7WebCamInference.Models;
 using Camera = YoloV7WebCamInference.Models.Camera;
 
 namespace YoloV7WebCamInference.ViewModels
@@ -29,9 +28,6 @@ namespace YoloV7WebCamInference.ViewModels
 
         [ObservableProperty]
         public Camera selectedCamera;
-
-        [ObservableProperty]
-        public ObservableCollection<CameraDetection> cameraDetections = new();
 
         public CameraViewModel(IYoloModelService yoloModelService, ICameraService cameraService)
         {

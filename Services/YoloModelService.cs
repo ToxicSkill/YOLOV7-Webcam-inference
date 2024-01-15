@@ -1,6 +1,7 @@
 ﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using OpenCvSharp.WpfExtensions;
+using System.Linq;
 using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Models;
@@ -34,7 +35,31 @@ namespace YoloV7WebCamInference.Services
             {
                 foreach (var item in predictions)
                 {
-                    camera.CameraDetectionsQueue.Add(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), Scalar.Black));
+                    camera.CameraDetectionsQueue.Enqueue(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), Scalar.Black));
+                }
+                var lastDetections = camera.CameraDetectionsQueue.TakeLast(5);
+                for (var i = 0; i < lastDetections.Count(); i++)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            camera.DetectioMinusFour = lastDetections.ElementAt(i);
+                            break;
+                        case 1:
+                            camera.DetectioMinusThree = lastDetections.ElementAt(i);
+                            break;
+                        case 2:
+                            camera.DetectioMinusTwo = lastDetections.ElementAt(i);
+                            break;
+                        case 3:
+                            camera.DetectioMinusOne = lastDetections.ElementAt(i);
+                            break;
+                        case 4:
+                            camera.DetectioZero = lastDetections.ElementAt(i);
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 foreach (var prediction in predictions)
                 {
