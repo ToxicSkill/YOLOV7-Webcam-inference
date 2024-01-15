@@ -1,20 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using OpenCvSharp;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Media.Imaging;
 
 namespace YoloV7WebCamInference.Models
 {
-    public partial class CameraDetection(string label, string score, Scalar color) : ObservableObject
+    public class CameraDetection(string label, string score, Scalar color)
     {
-        [ObservableProperty]
-        public string label = label;
+        public string Label { get; set; } = label;
 
-        [ObservableProperty]
-        public string score = score;
+        public string Score { get; set; } = score;
 
-        [ObservableProperty]
-        public Scalar color = color;
+        public Scalar Color { get; set; } = color;
     }
 
     public partial class Camera(string name, VideoCapture videoCapture) : ObservableObject
@@ -32,7 +29,7 @@ namespace YoloV7WebCamInference.Models
         public double currentFps = videoCapture.Fps;
 
         [ObservableProperty]
-        public Queue<CameraDetection> cameraDetectionsQueue = new();
+        public ObservableCollection<CameraDetection> cameraDetectionsQueue = [];
 
         public VideoCapture VideoCapture { get; set; } = videoCapture;
     }

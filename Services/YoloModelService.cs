@@ -1,9 +1,9 @@
 ﻿using OpenCvSharp;
+using OpenCvSharp.Extensions;
 using OpenCvSharp.WpfExtensions;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
+using YoloV7WebCamInference.Models;
 using YoloV7WebCamInference.Yolo;
 
 namespace YoloV7WebCamInference.Services
@@ -26,32 +26,32 @@ namespace YoloV7WebCamInference.Services
             }
         }
 
-        public List<YoloPrediction>? Predict(Image image)
+        public WriteableBitmap PredictAndDraw(Camera camera, Mat mat)
         {
-            return _yolov7.Predict(image);
-        }
-
-        public WriteableBitmap Draw(Mat mat, List<YoloPrediction>? predictions)
-        {
-            if (predictions == null)
+            using var image = mat.ToBitmap(System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            var predictions = _yolov7.Predict(image);
+            if (predictions != null)
             {
-                return mat.ToWriteableBitmap();
-            }
-            foreach (var prediction in predictions)
-            {
-                var color = new Scalar(
-                    prediction.Label.Color.R,
-                    prediction.Label.Color.G,
-                    prediction.Label.Color.B);
-                var rect = new Rect(
-                    (int)prediction.Rectangle.X,
-                    (int)prediction.Rectangle.Y,
-                    (int)prediction.Rectangle.Width,
-                    (int)prediction.Rectangle.Height);
-                Cv2.Rectangle(mat, rect, color);
-                Cv2.PutText(mat, prediction.Label.Name, new OpenCvSharp.Point(
-                    prediction.Rectangle.X - 7,
-                    prediction.Rectangle.Y - 23), HersheyFonts.HersheyPlain, 1, color, 2);
+                foreach (var item in predictions)
+                {
+                    camera.CameraDetectionsQueue.Add(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), Scalar.Black));
+                }
+                foreach (var prediction in predictions)
+                {
+                    var color = new Scalar(
+                        prediction.Label.Color.R,
+                        prediction.Label.Color.G,
+                        prediction.Label.Color.B);
+                    var rect = new Rect(
+                        (int)prediction.Rectangle.X,
+                        (int)prediction.Rectangle.Y,
+                        (int)prediction.Rectangle.Width,
+                        (int)prediction.Rectangle.Height);
+                    Cv2.Rectangle(mat, rect, color);
+                    Cv2.PutText(mat, prediction.Label.Name, new OpenCvSharp.Point(
+                        prediction.Rectangle.X - 7,
+                        prediction.Rectangle.Y - 23), HersheyFonts.HersheyPlain, 1, color, 2);
+                }
             }
             return mat.ToWriteableBitmap();
         }

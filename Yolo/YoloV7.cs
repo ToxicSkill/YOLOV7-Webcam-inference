@@ -118,10 +118,13 @@ namespace YoloV7WebCamInference.Yolo
 
             foreach (var item in _model.Outputs) // add outputs for processing
             {
-                output.Add(result.First(x => x.Name == item).Value as DenseTensor<float>);
+                output.Add(result.First(x =>
+                {
+                    return x.Name == item;
+                }).Value as DenseTensor<float>);
             };
 
-            return output.ToArray();
+            return [.. output];
         }
 
         private void get_input_details()

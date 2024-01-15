@@ -4,7 +4,7 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-           xmlns:viewmodels="clr-namespace:YoloV7WebCamInference.ViewModels"
+           xmlns:viewmodels="clr-namespace:YoloV7WebCamInference.ViewModels" 
            d:DataContext="{d:DesignInstance Type=viewmodels:CameraViewModel}"
            mc:Ignorable="d"
            d:DesignHeight="1080"
@@ -85,7 +85,7 @@
                            Text="Yolo v7"/>
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="1" Margin="15">
+        <Grid Grid.Row="1" Margin="15,15,15,15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
@@ -102,20 +102,35 @@
                            FontWeight="Regular" />
                 <ListView Grid.Row="1" ItemsSource="{Binding AvailableCameras}"
                           DisplayMemberPath="Name"
-                          SelectedItem="{Binding SelectedCamera}" />
+                          SelectedItem="{Binding SelectedCamera, Mode=TwoWay}" />
             </Grid>
-            <Grid Grid.Column="2">
+            <Image Grid.Column="1"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   Source="{Binding SelectedCamera.ImageSource}"
+                   RenderOptions.BitmapScalingMode="HighQuality"
+                   RenderOptions.CachingHint="Cache"
+                   RenderOptions.EdgeMode="Aliased"
+                   UseLayoutRounding="True" />
+            <Grid Grid.Column="2" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="2110" />
                 </Grid.RowDefinitions>
                 <TextBlock HorizontalAlignment="Center"
-                           Text="Detections"
+                           Text="Devices"
                            FontSize="24"
                            FontWeight="Regular" />
-                <ListView Grid.Row="1" HorizontalAlignment="Stretch"
-                          x:Name="detectionsListView"
+                <ui:Button HorizontalAlignment="Stretch"
+                           VerticalAlignment="Stretch"
+                           Command="{Binding AddCommand}" />
+                <ListView Grid.Row="1"
+                          HorizontalAlignment="Center"
+                          x:Name="detectionsListView" 
+                          VerticalAlignment="Stretch"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
                           ItemsSource="{Binding SelectedCamera.CameraDetectionsQueue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+ 
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -130,14 +145,7 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-            </Grid>
-            <Image Grid.Column="1"
-                   HorizontalAlignment="Stretch"
-                   VerticalAlignment="Stretch"
-                   Source="{Binding SelectedCamera.ImageSource}"
-                   RenderOptions.BitmapScalingMode="LowQuality"
-                   RenderOptions.CachingHint="Cache"
-                   RenderOptions.EdgeMode="Unspecified" />
+            </Grid> 
         </Grid>
     </Grid>
 </ui:UiPage>
