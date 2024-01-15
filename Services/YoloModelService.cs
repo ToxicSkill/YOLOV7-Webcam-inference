@@ -57,8 +57,6 @@ namespace YoloV7WebCamInference.Services
                         case 4:
                             camera.DetectioZero = lastDetections.ElementAt(i);
                             break;
-                        default:
-                            break;
                     }
                 }
                 foreach (var prediction in predictions)
