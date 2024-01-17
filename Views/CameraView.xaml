@@ -125,19 +125,27 @@
                           HorizontalAlignment="Center"
                           x:Name="detectionsListView" 
                           VerticalAlignment="Stretch"
+                          VirtualizingPanel.VirtualizationMode="Recycling" 
                           ScrollViewer.VerticalScrollBarVisibility="Visible"
                           ItemsSource="{Binding SelectedCamera.CameraDetectionsQueue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
  
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Label, Mode=OneTime}" />
-                                <TextBlock Grid.Column="2"
-                                           Text="{Binding Score, Mode=OneTime}" />
+                                <Border CornerRadius="10"
+                                        Opacity="0.3"
+                                        Background="{Binding Color, Mode=OneTime}" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock HorizontalAlignment="Stretch"
+                                               Text="{Binding Label, Mode=OneTime}" />
+                                    <TextBlock HorizontalAlignment="Stretch"
+                                               Grid.Column="2" Margin="15,0,0,0"
+                                               Text="{Binding Score, Mode=OneTime}" />
+                                </Grid>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>

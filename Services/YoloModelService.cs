@@ -2,6 +2,7 @@
 using OpenCvSharp.Extensions;
 using OpenCvSharp.WpfExtensions;
 using System.Linq;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Models;
@@ -41,7 +42,7 @@ namespace YoloV7WebCamInference.Services
                     {
                         _ = camera.CameraDetectionsQueue.Dequeue();
                     }
-                    camera.CameraDetectionsQueue.Enqueue(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), Scalar.Black));
+                    camera.CameraDetectionsQueue.Enqueue(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), new SolidColorBrush(Colors.Red)));
                 }
                 //var lastDetections = camera.CameraDetectionsQueue.TakeLast(5);
                 //for (var i = 0; i < lastDetections.Count(); i++)
