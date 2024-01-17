@@ -11,6 +11,8 @@ namespace YoloV7WebCamInference.Services
 {
     public class YoloModelService : IYoloModelService
     {
+        private const int MaxSizeOfDetectionQueue = 10;
+
         private YoloV7 _yolov7;
 
         public bool LoadYoloModel(string path, bool useCUDA = false)
@@ -35,30 +37,34 @@ namespace YoloV7WebCamInference.Services
             {
                 foreach (var item in predictions)
                 {
+                    if (camera.CameraDetectionsQueue.Count() > MaxSizeOfDetectionQueue)
+                    {
+                        _ = camera.CameraDetectionsQueue.Dequeue();
+                    }
                     camera.CameraDetectionsQueue.Enqueue(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), Scalar.Black));
                 }
-                var lastDetections = camera.CameraDetectionsQueue.TakeLast(5);
-                for (var i = 0; i < lastDetections.Count(); i++)
-                {
-                    switch (i)
-                    {
-                        case 0:
-                            camera.DetectioMinusFour = lastDetections.ElementAt(i);
-                            break;
-                        case 1:
-                            camera.DetectioMinusThree = lastDetections.ElementAt(i);
-                            break;
-                        case 2:
-                            camera.DetectioMinusTwo = lastDetections.ElementAt(i);
-                            break;
-                        case 3:
-                            camera.DetectioMinusOne = lastDetections.ElementAt(i);
-                            break;
-                        case 4:
-                            camera.DetectioZero = lastDetections.ElementAt(i);
-                            break;
-                    }
-                }
+                //var lastDetections = camera.CameraDetectionsQueue.TakeLast(5);
+                //for (var i = 0; i < lastDetections.Count(); i++)
+                //{
+                //    switch (i)
+                //    {
+                //        case 0:
+                //            camera.DetectioMinusFour = lastDetections.ElementAt(i);
+                //            break;
+                //        case 1:
+                //            camera.DetectioMinusThree = lastDetections.ElementAt(i);
+                //            break;
+                //        case 2:
+                //            camera.DetectioMinusTwo = lastDetections.ElementAt(i);
+                //            break;
+                //        case 3:
+                //            camera.DetectioMinusOne = lastDetections.ElementAt(i);
+                //            break;
+                //        case 4:
+                //            camera.DetectioZero = lastDetections.ElementAt(i);
+                //            break;
+                //    }
+                //}
                 foreach (var prediction in predictions)
                 {
                     var color = new Scalar(

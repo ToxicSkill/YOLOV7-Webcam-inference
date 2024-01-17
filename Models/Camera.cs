@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using OpenCvSharp;
-using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 
 namespace YoloV7WebCamInference.Models
@@ -32,18 +31,7 @@ namespace YoloV7WebCamInference.Models
         public CameraDetection detectioZero;
 
         [ObservableProperty]
-        public CameraDetection detectioMinusOne;
-
-        [ObservableProperty]
-        public CameraDetection detectioMinusTwo;
-
-        [ObservableProperty]
-        public CameraDetection detectioMinusThree;
-
-        [ObservableProperty]
-        public CameraDetection detectioMinusFour;
-
-        public Queue<CameraDetection> CameraDetectionsQueue { get; set; } = [];
+        public ObservableQueue<CameraDetection> cameraDetectionsQueue = [];
 
         public VideoCapture VideoCapture { get; set; } = videoCapture;
     }
