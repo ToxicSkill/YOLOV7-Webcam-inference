@@ -87,9 +87,9 @@
         </Grid>
         <Grid Grid.Row="1" Margin="15,15,15,15">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
             <Grid>
                 <Grid.RowDefinitions>

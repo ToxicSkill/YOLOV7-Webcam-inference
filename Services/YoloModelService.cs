@@ -2,7 +2,6 @@
 using OpenCvSharp.Extensions;
 using OpenCvSharp.WpfExtensions;
 using System.Linq;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Models;
@@ -36,38 +35,17 @@ namespace YoloV7WebCamInference.Services
             var predictions = _yolov7.Predict(image);
             if (predictions != null)
             {
-                foreach (var item in predictions)
+                foreach (var prediction in predictions)
                 {
+                    if (prediction.Label == null)
+                    {
+                        continue;
+                    }
                     if (camera.CameraDetectionsQueue.Count() > MaxSizeOfDetectionQueue)
                     {
                         _ = camera.CameraDetectionsQueue.Dequeue();
                     }
-                    camera.CameraDetectionsQueue.Enqueue(new Models.CameraDetection(item.Label.Name.ToString(), item.Score.ToString("N2"), new SolidColorBrush(Colors.Red)));
-                }
-                //var lastDetections = camera.CameraDetectionsQueue.TakeLast(5);
-                //for (var i = 0; i < lastDetections.Count(); i++)
-                //{
-                //    switch (i)
-                //    {
-                //        case 0:
-                //            camera.DetectioMinusFour = lastDetections.ElementAt(i);
-                //            break;
-                //        case 1:
-                //            camera.DetectioMinusThree = lastDetections.ElementAt(i);
-                //            break;
-                //        case 2:
-                //            camera.DetectioMinusTwo = lastDetections.ElementAt(i);
-                //            break;
-                //        case 3:
-                //            camera.DetectioMinusOne = lastDetections.ElementAt(i);
-                //            break;
-                //        case 4:
-                //            camera.DetectioZero = lastDetections.ElementAt(i);
-                //            break;
-                //    }
-                //}
-                foreach (var prediction in predictions)
-                {
+                    camera.CameraDetectionsQueue.Enqueue(new CameraDetection(prediction.Label?.Name?.ToString(), prediction.Score.ToString("N2")));
                     var color = new Scalar(
                         prediction.Label.Color.R,
                         prediction.Label.Color.G,
@@ -78,7 +56,7 @@ namespace YoloV7WebCamInference.Services
                         (int)prediction.Rectangle.Width,
                         (int)prediction.Rectangle.Height);
                     Cv2.Rectangle(mat, rect, color);
-                    Cv2.PutText(mat, prediction.Label.Name, new OpenCvSharp.Point(
+                    Cv2.PutText(mat, prediction.Label.Name, new Point(
                         prediction.Rectangle.X - 7,
                         prediction.Rectangle.Y - 23), HersheyFonts.HersheyPlain, 1, color, 2);
                 }
