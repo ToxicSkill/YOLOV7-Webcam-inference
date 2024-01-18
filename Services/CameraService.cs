@@ -19,7 +19,7 @@ namespace YoloV7WebCamInference.Services
 
         public CameraService()
         {
-            _cameras = new List<Camera>();
+            _cameras = [];
             GetAllConnectedCameras();
             _videoCapture = new VideoCapture();
             SetCurrentCamera(_cameras?.Count > 0 ? _cameras.First() : null);
@@ -85,7 +85,7 @@ namespace YoloV7WebCamInference.Services
 
         private void GetAllConnectedCameras()
         {
-            _cameras = new();
+            _cameras = [];
             var cameraIndex = 0;
             foreach (var cameraName in GetConnectedCameras())
             {

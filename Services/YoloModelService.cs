@@ -1,6 +1,7 @@
 ﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using OpenCvSharp.WpfExtensions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
@@ -31,8 +32,12 @@ namespace YoloV7WebCamInference.Services
 
         public WriteableBitmap PredictAndDraw(Camera camera, Mat mat)
         {
-            using var image = mat.ToBitmap(System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            var predictions = _yolov7.Predict(image);
+            Draw(camera, mat, _yolov7.Predict(mat.ToBitmap(System.Drawing.Imaging.PixelFormat.Format24bppRgb)));
+            return mat.ToWriteableBitmap();
+        }
+
+        private static void Draw(Camera camera, Mat mat, List<YoloPrediction> predictions)
+        {
             if (predictions != null)
             {
                 foreach (var prediction in predictions)
@@ -61,7 +66,6 @@ namespace YoloV7WebCamInference.Services
                         prediction.Rectangle.Y - 23), HersheyFonts.HersheyPlain, 1, color, 2);
                 }
             }
-            return mat.ToWriteableBitmap();
         }
     }
 }

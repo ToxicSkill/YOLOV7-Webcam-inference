@@ -111,7 +111,7 @@ namespace YoloV7WebCamInference.ViewModels
 
         private async Task PlayCamera()
         {
-            var fpsMs = (int)(1000 / 5);// SelectedCamera.Fps);
+            var fpsMs = (int)(1000 / 15);// SelectedCamera.CurrentFps / 2);
             long timestamp = 0;
             try
             {
@@ -123,7 +123,6 @@ namespace YoloV7WebCamInference.ViewModels
                     {
 
                         SelectedCamera.ImageSource = _yoloModelService.PredictAndDraw(SelectedCamera, _cameraService.GetFrame());
-                        //SelectedCamera.ImageSource = _cameraService.GetFrame().ToWriteableBitmap();foreach (var item in predicitons)
                     }, DispatcherPriority);
                     _cancellationToken.Token.ThrowIfCancellationRequested();
                     var timeMs = Stopwatch.GetElapsedTime(timestamp, Stopwatch.GetTimestamp()).Milliseconds;
