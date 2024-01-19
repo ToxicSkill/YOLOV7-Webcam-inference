@@ -27,6 +27,9 @@ namespace YoloV7WebCamInference.Models
     public partial class Camera(string name, VideoCapture videoCapture) : ObservableObject
     {
         [ObservableProperty]
+        public string imageSourceSize;
+
+        [ObservableProperty]
         public WriteableBitmap imageSource;
 
         [ObservableProperty]

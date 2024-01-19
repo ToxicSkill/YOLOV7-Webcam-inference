@@ -4,90 +4,16 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-           xmlns:viewmodels="clr-namespace:YoloV7WebCamInference.ViewModels" 
+           xmlns:viewmodels="clr-namespace:YoloV7WebCamInference.ViewModels"
            d:DataContext="{d:DesignInstance Type=viewmodels:CameraViewModel}"
            mc:Ignorable="d"
            d:DesignHeight="1080"
            d:DesignWidth="1920">
+   
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid Margin="0,20,0,0"> 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <StackPanel>
-                <StackPanel HorizontalAlignment="Center"
-                            Orientation="Horizontal">
-                    <TextBlock HorizontalAlignment="Center"
-                               Text="Device name"
-                               FontSize="24"
-                               FontWeight="Regular" />
-                    <ui:SymbolIcon Symbol="ScanType20"
-                                   Margin="5,0,0,0"
-                                   VerticalAlignment="Bottom"
-                                   FontSize="24" />
-                </StackPanel> 
-                <TextBlock HorizontalAlignment="Center"
-                           Text="{Binding SelectedCamera.Name}" />
-            </StackPanel>
-            <StackPanel Grid.Column="1">
-                <StackPanel HorizontalAlignment="Center"
-                            Orientation="Horizontal">
-                    <TextBlock HorizontalAlignment="Center"
-                               Text="FPS"
-                               FontSize="24"
-                               FontWeight="Regular" />
-                    <ui:SymbolIcon Symbol="DeviceEq20"
-                                   Margin="5,0,0,0"
-                                   VerticalAlignment="Bottom"
-                                   FontSize="24" />
-                </StackPanel> 
-                <StackPanel HorizontalAlignment="Center"
-                            Orientation="Horizontal">
-                    <TextBlock HorizontalAlignment="Center"
-                               FontSize="20"
-                               FontWeight="Thin"
-                               Text="{Binding SelectedCamera.Fps}" />
-                    <TextBlock HorizontalAlignment="Center"
-                               FontSize="20"
-                               FontWeight="Thin"
-                               Text="(" />
-                    <TextBlock HorizontalAlignment="Center"
-                               FontSize="20"
-                               FontWeight="Thin"
-                               Text="{Binding SelectedCamera.CurrentFps, FallbackValue=0}" />
-                    <TextBlock HorizontalAlignment="Center"
-                               FontSize="20"
-                               FontWeight="Thin"
-                               Text=")" />
-                </StackPanel>
-            </StackPanel>
-            <StackPanel Grid.Column="2">
-                <StackPanel HorizontalAlignment="Center"
-                            Orientation="Horizontal">
-                    <TextBlock HorizontalAlignment="Center"
-                               Text="Yolo type"
-                               FontSize="24"
-                               FontWeight="Regular" />
-                    <ui:SymbolIcon Symbol="BrainCircuit20"
-                                   Margin="5,0,0,0"
-                                   VerticalAlignment="Bottom"
-                                   FontSize="24" />
-                </StackPanel>
-                <TextBlock HorizontalAlignment="Center"
-                           FontSize="20"
-                           FontWeight="Thin"
-                           Text="Yolo v7"/>
-            </StackPanel>
-        </Grid>
         <Grid Grid.Row="1" Margin="15,15,15,15">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
@@ -95,6 +21,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="2*" /> 
                 </Grid.RowDefinitions>
                 <TextBlock HorizontalAlignment="Center"
                            Text="Devices"
@@ -103,6 +30,119 @@
                 <ListView Grid.Row="1" ItemsSource="{Binding AvailableCameras}"
                           DisplayMemberPath="Name"
                           SelectedItem="{Binding SelectedCamera, Mode=TwoWay}" />
+                <Grid Grid.Row="2"> 
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="Run camera"
+                                   FontSize="24"
+                                   FontWeight="Regular" />
+                        <ui:ToggleSwitch Grid.Row="1"
+                                  HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         IsChecked="{Binding RunCamera, Mode=TwoWay}" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="Run inference"
+                                   FontSize="24"
+                                   FontWeight="Regular" />
+                        <ui:ToggleSwitch Grid.Row="1"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         IsEnabled="{Binding RunCamera, Mode=TwoWay}"
+                                         IsChecked="{Binding RunDetection, Mode=TwoWay}"/>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="FPS"
+                                   FontSize="24"
+                                   FontWeight="Regular" />
+                        <StackPanel Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal">
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="20"
+                                       FontWeight="Thin"
+                                       Text="{Binding SelectedCamera.Fps}" />
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="20"
+                                       FontWeight="Thin"
+                                       Text="(" />
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="20"
+                                       FontWeight="Thin"
+                                       Text="{Binding SelectedCamera.CurrentFps, FallbackValue=0}" />
+                            <TextBlock HorizontalAlignment="Center"
+                                       FontSize="20"
+                                       FontWeight="Thin"
+                                       Text=")" />
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="Stream"
+                                   FontSize="24"
+                                   FontWeight="Regular" />
+                        <TextBlock Grid.Row="1"
+                                   FontSize="20"
+                                   FontWeight="Thin"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="{Binding SelectedCamera.ImageSourceSize}" />
+                    </Grid>
+                    <Grid Grid.Row="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock 
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Text="Yolo type"
+                                   FontSize="24"
+                                   FontWeight="Regular" /> 
+                        <TextBlock Grid.Row="1" 
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="20"
+                                   FontWeight="Thin"
+                                   Text="Yolo v7" />
+                    </Grid> 
+                </Grid>
             </Grid>
             <Image Grid.Column="1"
                    HorizontalAlignment="Stretch"
@@ -122,7 +162,7 @@
                            FontSize="24"
                            FontWeight="Regular" /> 
                 <ListView Grid.Row="1"
-                          HorizontalAlignment="Center"
+                          HorizontalAlignment="Stretch"
                           x:Name="detectionsListView" 
                           VerticalAlignment="Stretch"
                           VirtualizingPanel.VirtualizationMode="Recycling" 
