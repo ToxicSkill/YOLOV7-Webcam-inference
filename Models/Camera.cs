@@ -47,6 +47,6 @@ namespace YoloV7WebCamInference.Models
         [ObservableProperty]
         public ObservableQueue<CameraDetection> cameraDetectionsQueue = [];
 
-        public VideoCapture VideoCapture { get; set; } = videoCapture;
+        public VideoCapture VideoCapture { get; init; } = videoCapture;
     }
 }
