@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Wpf.Ui.Mvvm.Contracts;
 using YoloV7WebCamInference.Interfaces;
 using Camera = YoloV7WebCamInference.Models.Camera;
 
@@ -26,6 +27,8 @@ namespace YoloV7WebCamInference.ViewModels
         private const int DefaultFps = 5;
 
         private static readonly DispatcherPriority DispatcherPriority = DispatcherPriority.Render;
+
+        private readonly ISnackbarService _snackbarService;
 
         private readonly IYoloModelService _yoloModelService;
 
@@ -46,8 +49,9 @@ namespace YoloV7WebCamInference.ViewModels
         [ObservableProperty]
         private bool runDetection;
 
-        public CameraViewModel(IYoloModelService yoloModelService, ICameraService cameraService)
+        public CameraViewModel(IYoloModelService yoloModelService, ICameraService cameraService, ISnackbarService snackbarService)
         {
+            _snackbarService = snackbarService;
             _yoloModelService = yoloModelService;
             _cameraService = cameraService;
             _cancellationToken = new CancellationTokenSource();
@@ -65,7 +69,7 @@ namespace YoloV7WebCamInference.ViewModels
 
         partial void OnRunCameraChanged(bool value)
         {
-            if (value)
+            if (value & CheckRunCameraConditions())
             {
                 Task.Run(async () =>
                 {
@@ -83,6 +87,20 @@ namespace YoloV7WebCamInference.ViewModels
             {
                 RunDetection = false;
                 _cancellationToken.Cancel();
+            }
+        }
+
+        private bool CheckRunCameraConditions()
+        {
+            if (SelectedCamera != null)
+            {
+                return true;
+            }
+            else
+            {
+                _snackbarService.Show("Error", "No selected camera", Wpf.Ui.Common.SymbolRegular.ErrorCircle20, Wpf.Ui.Common.ControlAppearance.Danger);
+                runCamera = false;
+                return false;
             }
         }
 
