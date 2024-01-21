@@ -50,7 +50,7 @@ namespace YoloV7WebCamInference.Services
                     {
                         _ = camera.CameraDetectionsQueue.Dequeue();
                     }
-                    camera.CameraDetectionsQueue.Enqueue(new CameraDetection(prediction.Label?.Name?.ToString(), prediction.Score.ToString("N2")));
+                    camera.CameraDetectionsQueue.Enqueue(new CameraDetection(prediction.Label?.Name?.ToString(), (prediction.Score * 100).ToString("N1")));
                     var color = new Scalar(
                         prediction.Label.Color.R,
                         prediction.Label.Color.G,

@@ -150,10 +150,10 @@ namespace YoloV7WebCamInference.ViewModels
                     var loopTimeMiliseconds = Stopwatch.GetElapsedTime(timestamp, Stopwatch.GetTimestamp()).Milliseconds;
                     if (_fpsQueue.Count > MaxFpsQueueCount / 2)
                     {
-                        fpsMs = MilisecondsInSecond / (int)Math.Clamp(MilisecondsInSecond / (_fpsQueue.Average() + 1), 1, SelectedCamera.CurrentFps);
+                        fpsMs = MilisecondsInSecond / (int)Math.Clamp(MilisecondsInSecond / (_fpsQueue.Average() + 1), 1, SelectedCamera.Fps);
                     }
                     var delayTime = Math.Clamp(fpsMs - loopTimeMiliseconds, 0, fpsMs);
-                    SelectedCamera.Fps = MilisecondsInSecond / loopTimeMiliseconds;
+                    SelectedCamera.CurrentFps = Math.Clamp(MilisecondsInSecond / loopTimeMiliseconds, 0, SelectedCamera.Fps);
                     AddLoopTimeToQueue(loopTimeMiliseconds);
                     await Task.Delay(delayTime);
                 }
