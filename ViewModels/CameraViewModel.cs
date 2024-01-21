@@ -22,6 +22,8 @@ namespace YoloV7WebCamInference.ViewModels
 
         private const int MaxFpsQueueCount = 10;
 
+        private const int DefaultScoreThreshold = 50;
+
         private const int MilisecondsInSecond = 1000;
 
         private const int DefaultFps = 5;
@@ -48,6 +50,9 @@ namespace YoloV7WebCamInference.ViewModels
 
         [ObservableProperty]
         private bool runDetection;
+
+        [ObservableProperty]
+        private int scoreThreshold = DefaultScoreThreshold;
 
         public CameraViewModel(IYoloModelService yoloModelService, ICameraService cameraService, ISnackbarService snackbarService)
         {
@@ -147,7 +152,7 @@ namespace YoloV7WebCamInference.ViewModels
                     {
                         if (RunDetection && RunCamera)
                         {
-                            SelectedCamera.ImageSource = _yoloModelService.PredictAndDraw(SelectedCamera, _cameraService.GetFrame());
+                            SelectedCamera.ImageSource = _yoloModelService.PredictAndDraw(SelectedCamera, _cameraService.GetFrame(), ScoreThreshold);
                         }
                         else if (RunCamera)
                         {

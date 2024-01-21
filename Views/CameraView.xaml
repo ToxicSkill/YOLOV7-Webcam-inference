@@ -197,6 +197,8 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
@@ -204,7 +206,44 @@
                            HorizontalAlignment="Center"
                            Text="Detections"
                            FontSize="24" />
-                <Grid Grid.Row="1">
+                <Grid Grid.Row="1" HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                               HorizontalAlignment="Center"
+                               Text="Score threshold"
+                               FontSize="20"
+                               FontWeight="Thin" 
+                               Margin="5,0"/>
+                    <TextBlock
+                               Grid.Column="1"
+                               HorizontalAlignment="Center"
+                               Text="{Binding ScoreThreshold}"
+                               FontSize="20"
+                               FontWeight="Thin"
+                               Margin="5,0,0,0" />
+                    <TextBlock Grid.Column="2"
+                               HorizontalAlignment="Center"
+                               Text="%"
+                               FontSize="20"
+                               FontWeight="Thin"
+                               Margin="1,0" />
+                </Grid>
+                <Slider Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="5,0"
+                        IsSnapToTickEnabled="True"
+                        TickFrequency="10"
+                        Minimum="10"
+                        Maximum="90" 
+                        Value="{Binding ScoreThreshold, Mode=TwoWay}"
+                           HorizontalAlignment="Stretch" 
+                           FontSize="20"
+                           FontWeight="Thin" />
+                <Grid Grid.Row="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
@@ -220,7 +259,7 @@
                                FontSize="20"
                                FontWeight="Thin" />
                 </Grid>
-                <ListView Grid.Row="2"
+                <ListView Grid.Row="4"
                           x:Name="detectionsListView"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"

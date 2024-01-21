@@ -10,6 +10,6 @@ namespace YoloV7WebCamInference.Interfaces
 
         void LoadLabels(string pathToLabelsFile = "");
 
-        public WriteableBitmap PredictAndDraw(Camera camera, Mat mat);
+        public WriteableBitmap PredictAndDraw(Camera camera, Mat mat, int scoreThreshold);
     }
 }

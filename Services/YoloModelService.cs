@@ -30,13 +30,13 @@ namespace YoloV7WebCamInference.Services
             }
         }
 
-        public WriteableBitmap PredictAndDraw(Camera camera, Mat mat)
+        public WriteableBitmap PredictAndDraw(Camera camera, Mat mat, int scoreThreshold)
         {
-            Draw(camera, mat, _yolov7.Predict(mat.ToBitmap(System.Drawing.Imaging.PixelFormat.Format24bppRgb)));
+            Draw(camera, mat, _yolov7.Predict(mat.ToBitmap(System.Drawing.Imaging.PixelFormat.Format24bppRgb)), scoreThreshold);
             return mat.ToWriteableBitmap();
         }
 
-        private static void Draw(Camera camera, Mat mat, List<YoloPrediction> predictions)
+        private static void Draw(Camera camera, Mat mat, List<YoloPrediction> predictions, int scoreThreshold)
         {
             if (predictions != null)
             {
@@ -50,7 +50,11 @@ namespace YoloV7WebCamInference.Services
                     {
                         _ = camera.CameraDetectionsQueue.Dequeue();
                     }
-                    camera.CameraDetectionsQueue.Enqueue(new CameraDetection(prediction.Label?.Name?.ToString(), (prediction.Score * 100).ToString("N1")));
+                    var score = prediction.Score * 100;
+                    if (score >= scoreThreshold)
+                    {
+                        camera.CameraDetectionsQueue.Enqueue(new CameraDetection(prediction.Label?.Name?.ToString(), score.ToString("N1")));
+                    }
                     var color = new Scalar(
                         prediction.Label.Color.R,
                         prediction.Label.Color.G,
