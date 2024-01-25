@@ -82,5 +82,17 @@ namespace YoloV7WebCamInference.Properties {
                 this["SmptServer"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\"\"")]
+        public string ConnectionStrings {
+            get {
+                return ((string)(this["ConnectionStrings"]));
+            }
+            set {
+                this["ConnectionStrings"] = value;
+            }
+        }
     }
 }

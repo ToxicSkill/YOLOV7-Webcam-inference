@@ -1,4 +1,5 @@
 ﻿using OpenCvSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
@@ -7,6 +8,12 @@ using YoloV7WebCamInference.Models;
 
 namespace YoloV7WebCamInference.Services
 {
+    public enum ECameraType
+    {
+        USB,
+        IP
+    }
+
     public class CameraService : ICameraService
     {
         private int _currentCameraIndex;
@@ -17,12 +24,20 @@ namespace YoloV7WebCamInference.Services
 
         private readonly Mat _image = new();
 
+        private readonly List<string> _connectionStrings;
+
         public CameraService()
         {
+            _connectionStrings = GetConnectionStrings();
             _cameras = [];
             GetAllConnectedCameras();
             _videoCapture = new VideoCapture();
             SetCurrentCamera(_cameras?.Count > 0 ? _cameras.First() : null);
+        }
+
+        private List<string> GetConnectionStrings()
+        {
+            return [.. Properties.Settings.Default.ConnectionStrings.Split("\n", StringSplitOptions.None)];
         }
 
         public string GetCurrentCameraName()
@@ -87,14 +102,26 @@ namespace YoloV7WebCamInference.Services
         {
             _cameras = [];
             var cameraIndex = 0;
-            foreach (var cameraName in GetConnectedCameras())
+            foreach (var cameraName in GetConnectedPnPCameras())
             {
-                _cameras.Add(new Camera(cameraName, new VideoCapture(cameraIndex)));
-                cameraIndex++;
+                var videoCapture = new VideoCapture(cameraIndex);
+                if (videoCapture.IsOpened())
+                {
+                    _cameras.Add(new Camera(cameraName, videoCapture));
+                    cameraIndex++;
+                }
+            }
+            foreach (var connectionString in GetConnectionStrings())
+            {
+                var videoCapture = new VideoCapture(connectionString);
+                if (videoCapture.IsOpened())
+                {
+                    _cameras.Add(new Camera(videoCapture.GetBackendName(), videoCapture));
+                }
             }
         }
 
-        private static List<string> GetConnectedCameras()
+        private static List<string> GetConnectedPnPCameras()
         {
             var cameraNames = new List<string>();
             using (ManagementObjectSearcher searcher = new("SELECT * FROM Win32_PnPEntity WHERE (PNPClass = 'Image' OR PNPClass = 'Camera')"))

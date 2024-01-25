@@ -2,6 +2,7 @@
 using OpenCvSharp;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using YoloV7WebCamInference.Services;
 
 namespace YoloV7WebCamInference.Models
 {
@@ -26,6 +27,9 @@ namespace YoloV7WebCamInference.Models
 
     public partial class Camera(string name, VideoCapture videoCapture) : ObservableObject
     {
+        [ObservableProperty]
+        public ECameraType cameraType;
+
         [ObservableProperty]
         public string imageSourceSize;
 
