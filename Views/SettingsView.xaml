@@ -1,0 +1,132 @@
+﻿<ui:UiPage x:Class="YoloV7WebCamInference.Views.SettingsView"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+           xmlns:viewmodels="clr-namespace:YoloV7WebCamInference.ViewModels" 
+           d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
+           Title="Dashboard"
+            mc:Ignorable="d" 
+            d:DesignHeight="1450" d:DesignWidth="800">
+
+
+    <ScrollViewer Grid.Column="1" x:Name="scrollViewer" VerticalScrollBarVisibility="Hidden">
+        <StackPanel x:Name="stackPanel" Margin="10,0,0,0">
+            <TextBlock x:Name="firstHeader" Text="Camera" Margin="0,20,0,0" FontSize="18" FontWeight="Light"/>
+            <ui:CardControl Margin="15,8,15,0" Icon="Connector20">
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="13" FontWeight="Medium" Text="Connection string"/>
+                        <TextBlock FontSize="12" Text="Set connection string"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBox MaxLength="100" MinWidth="200" Text="{Binding ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="OK" Appearance="Primary" Command="{Binding OkConnectionStringCommand}"/>
+                </StackPanel>
+            </ui:CardControl>
+            <ui:CardControl Margin="15,8,15,0" Icon="FlipVertical20">
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="13" FontWeight="Medium" Text="Flip"/>
+                        <TextBlock FontSize="12" Text="Flip the camera vertically"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding FlipVertically}"/>
+            </ui:CardControl>
+            <ui:CardControl Margin="15,8,15,0" Icon="FlipHorizontal20">
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="13" FontWeight="Medium" Text="Flip"/>
+                        <TextBlock FontSize="12" Text="Flip the camera horizontally"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding FlipHorizontally}"/>
+            </ui:CardControl>
+
+
+            <TextBlock Text="AI Model" Margin="0,20,0,0" FontSize="18" FontWeight="Light"/>
+            <ui:CardExpander Margin="15,8,15,0" Icon="BrainCircuit20">
+                <ui:CardExpander.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="13" FontWeight="Medium" Text="AI Labels"/>
+                        <TextBlock FontSize="12" Text="Select AI labels to detect"/>
+                    </StackPanel>
+                </ui:CardExpander.Header>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox ItemsSource="{Binding AiModelLabelsItemsSource}" SelectedValue="{Binding SelectedAiModelLabel}"/>
+                        <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="ADD" Appearance="Primary" Command="{Binding AddLabelCommand}"/>
+                        <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="REMOVE" Appearance="Danger" Command="{Binding RemoveLabelCommand}"/>
+                    </StackPanel>
+                    <ListView Margin="0,10" ItemsSource="{Binding SelectedAiModelLabels}" SelectedValue="{Binding SelectedAiModelLabel}"/>
+                </StackPanel>
+            </ui:CardExpander>
+            
+            <TextBlock Text="Notification" Margin="0,20,0,0" FontSize="18" FontWeight="Light"/>
+            <ui:CardControl Margin="15,8,15,0" Icon="Send20">
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="13" FontWeight="Medium" Text="Sender"/>
+                        <TextBlock FontSize="12" Text="Set sender e-mail"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBox MaxLength="100" MinWidth="200" Text="{Binding SenderString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="OK" Appearance="Primary" Command="{Binding OkSenderStringCommand}"/>
+                </StackPanel>
+            </ui:CardControl>
+            <ui:CardControl Margin="15,8,15,0" Icon="Receipt20">
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="13" FontWeight="Medium" Text="Recipient"/>
+                        <TextBlock FontSize="12" Text="Set recipient e-mail"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBox MaxLength="100" MinWidth="200" Text="{Binding RecipientString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="OK" Appearance="Primary" Command="{Binding OkRecipientStringCommand}"/>
+                </StackPanel>
+            </ui:CardControl>
+            <ui:CardControl Margin="15,8,15,0" Icon="Password20">
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="13" FontWeight="Medium" Text="Sender Password"/>
+                        <TextBlock FontSize="12" Text="Set sender password"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBox MaxLength="100" MinWidth="200" Text="{Binding SenderPasswordString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="OK" Appearance="Primary" Command="{Binding OkSenderPasswordStringCommand}"/>
+                </StackPanel>
+            </ui:CardControl>
+            <ui:CardControl Margin="15,8,15,0" Icon="SerialPort20">
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="13" FontWeight="Medium" Text="Sender SMTP port"/>
+                        <TextBlock FontSize="12" Text="Set sender SMTP port"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBox MaxLength="100" MinWidth="200" Text="{Binding SenderSmtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="OK" Appearance="Primary" Command="{Binding OkSenderSmtpPortCommand}"/>
+                </StackPanel>
+            </ui:CardControl>
+            <ui:CardControl Margin="15,8,15,0" Icon="Server20">
+                <ui:CardControl.Header>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="13" FontWeight="Medium" Text="SMPT Server"/>
+                        <TextBlock FontSize="12" Text="Set smpt server"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBox MaxLength="100" MinWidth="200" Text="{Binding SmptServerString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="OK" Appearance="Primary" Command="{Binding OkSmptServerStringCommand}"/>
+                </StackPanel>
+            </ui:CardControl>
+        </StackPanel>
+    </ScrollViewer>
+    
+
+</ui:UiPage>

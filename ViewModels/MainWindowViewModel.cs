@@ -47,6 +47,14 @@ namespace YoloV7WebCamInference.ViewModels
                 Content = "Camera",
                 PageType = typeof(CameraView)
             });
+            MenuItems.Add(new NavigationItem()
+            {
+                Icon = SymbolRegular.Settings20,
+                PageTag = "settings",
+                Cache = true,
+                Content = "Settings",
+                PageType = typeof(SettingsView)
+            });
         }
     }
 }

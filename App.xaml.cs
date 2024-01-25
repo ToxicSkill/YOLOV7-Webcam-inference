@@ -27,6 +27,8 @@ namespace YoloV7WebCamInference
             services.AddSingleton<ISnackbarService, SnackbarService>();
             services.AddSingleton<IYoloModelService, YoloModelService>();
             services.AddSingleton<ICameraService, CameraService>();
+            services.AddSingleton<SettingsViewModel>();
+            services.AddSingleton<SettingsView>();
             services.AddSingleton<CameraViewModel>();
             services.AddSingleton<CameraView>();
             services.AddSingleton<DashboardViewModel>();
