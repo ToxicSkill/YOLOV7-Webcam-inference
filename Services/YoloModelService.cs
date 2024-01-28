@@ -14,12 +14,14 @@ namespace YoloV7WebCamInference.Services
     {
         private const int MaxSizeOfDetectionQueue = 10;
 
+        private const string ModelPath = "Yolo\\yolov7-tiny.onnx";
+
         private YoloV7 _yolov7;
 
-        public bool LoadYoloModel(string path, bool useCUDA = false)
+        public YoloModelService()
         {
-            _yolov7 = new YoloV7(path, useCUDA);
-            return _yolov7 != null;
+            _yolov7 = new YoloV7(ModelPath);
+            LoadLabels();
         }
 
         public void LoadLabels(string pathToLabelsFile = "")

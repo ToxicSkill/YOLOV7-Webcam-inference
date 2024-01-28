@@ -17,5 +17,10 @@ namespace YoloV7WebCamInference.Views
             InitializeComponent();
             DataContext = ViewModel;
         }
+
+        private void UiPage_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ViewModel.OnLoaded();
+        }
     }
 }

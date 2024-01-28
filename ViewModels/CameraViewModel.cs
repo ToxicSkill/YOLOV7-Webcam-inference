@@ -11,15 +11,13 @@ using System.Windows;
 using System.Windows.Threading;
 using Wpf.Ui.Mvvm.Contracts;
 using YoloV7WebCamInference.Interfaces;
-using Camera = YoloV7WebCamInference.Models.Camera;
+using YoloV7WebCamInference.Models;
 
 namespace YoloV7WebCamInference.ViewModels
 {
     [ObservableObject]
     public partial class CameraViewModel
     {
-        private const string ModelPath = "Yolo\\yolov7-tiny.onnx";
-
         private const int MaxFpsQueueCount = 10;
 
         private const int DefaultScoreThreshold = 50;
@@ -40,7 +38,8 @@ namespace YoloV7WebCamInference.ViewModels
 
         private readonly Queue<int> _fpsQueue;
 
-        public ObservableCollection<Camera> AvailableCameras { get; set; }
+        [ObservableProperty]
+        public ObservableCollection<Camera> availableCameras;
 
         [ObservableProperty]
         public Camera selectedCamera;
@@ -61,15 +60,6 @@ namespace YoloV7WebCamInference.ViewModels
             _cameraService = cameraService;
             _cancellationToken = new CancellationTokenSource();
             _fpsQueue = new Queue<int>();
-
-            AvailableCameras = new(_cameraService.GetAllCameras());
-
-            var isYoloInitialized = InitializeYolo();
-            var isCameraInitialized = InitializeCamera();
-            if (!isYoloInitialized || !isCameraInitialized)
-            {
-                App.Current.Shutdown();
-            }
         }
 
         partial void OnRunCameraChanged(bool value)
@@ -112,19 +102,16 @@ namespace YoloV7WebCamInference.ViewModels
         partial void OnSelectedCameraChanged(Camera value)
         {
             _cameraService.SetCurrentCamera(SelectedCamera);
+
+            _cameraService.UpdateCameraInfo(SelectedCamera);
         }
 
-        private bool InitializeYolo()
+        internal void OnLoaded()
         {
-            var status = _yoloModelService.LoadYoloModel(ModelPath);
-
-            if (status)
-            {
-                _yoloModelService.LoadLabels();
-            }
-
-            return status;
+            AvailableCameras = new(_cameraService.GetAllCameras());
+            InitializeCamera();
         }
+
 
         private bool InitializeCamera()
         {
@@ -141,7 +128,6 @@ namespace YoloV7WebCamInference.ViewModels
         private async Task PlayCamera()
         {
             var fpsMs = MilisecondsInSecond / DefaultFps;
-            var firstImage = true;
             try
             {
                 while (true)
@@ -150,26 +136,19 @@ namespace YoloV7WebCamInference.ViewModels
                     var timestamp = Stopwatch.GetTimestamp();
                     await Application.Current.Dispatcher.BeginInvoke(() =>
                     {
-                        if (RunDetection && RunCamera)
+                        if (RunCamera)
                         {
-                            SelectedCamera.ImageSource = _yoloModelService.PredictAndDraw(SelectedCamera, _cameraService.GetFrame(), ScoreThreshold);
-                        }
-                        else if (RunCamera)
-                        {
-                            SelectedCamera.ImageSource = _cameraService.GetFrame().ToWriteableBitmap();
+                            _cameraService.GrabCameraFrame();
+                            if (RunDetection)
+                            {
+                                SelectedCamera.ImageSource = _yoloModelService.PredictAndDraw(SelectedCamera, _cameraService.GetLastCameraFrame(), ScoreThreshold);
+                            }
+                            else
+                            {
+                                SelectedCamera.ImageSource = _cameraService.GetLastCameraFrame().ToWriteableBitmap();
+                            }
                         }
                     }, DispatcherPriority);
-                    if (firstImage)
-                    {
-                        if (SelectedCamera.ImageSource != null)
-                        {
-                            firstImage = false;
-                            await Application.Current.Dispatcher.BeginInvoke(() =>
-                            {
-                                SelectedCamera.ImageSourceSize = $"{SelectedCamera.ImageSource.Width} x {SelectedCamera.ImageSource.Height}";
-                            }, DispatcherPriority);
-                        }
-                    }
                     var loopTimeMiliseconds = Stopwatch.GetElapsedTime(timestamp, Stopwatch.GetTimestamp()).Milliseconds;
                     if (_fpsQueue.Count > MaxFpsQueueCount / 2)
                     {

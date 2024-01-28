@@ -7,6 +7,7 @@
            xmlns:viewmodels="clr-namespace:YoloV7WebCamInference.ViewModels"
            d:DataContext="{d:DesignInstance Type=viewmodels:CameraViewModel}"
            mc:Ignorable="d"
+           Loaded="UiPage_Loaded"
            d:DesignHeight="1080"
            d:DesignWidth="1920">
 
@@ -14,9 +15,9 @@
         <Grid Grid.Row="1"
               Margin="15,15,15,15">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="300" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="180" />
             </Grid.ColumnDefinitions>
             <Grid>
                 <Grid.RowDefinitions>
@@ -43,7 +44,7 @@
                            Text="Devices"
                            FontSize="24" />
                 <ListView Grid.Row="5"
-                          ItemsSource="{Binding AvailableCameras}"
+                          ItemsSource="{Binding AvailableCameras, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           VirtualizingPanel.VirtualizationMode="Recycling"

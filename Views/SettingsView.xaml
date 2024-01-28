@@ -22,8 +22,8 @@
                     </StackPanel>
                 </ui:CardControl.Header>
                 <StackPanel Orientation="Horizontal">
-                    <ui:TextBox MaxLength="100" MinWidth="200" Text="{Binding ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="OK" Appearance="Primary" Command="{Binding OkConnectionStringCommand}"/>
+                    <ui:TextBox MaxLength="100" MinWidth="200" Text="{Binding ConnectionStrings, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ui:Button VerticalAlignment="Stretch" Margin="5,0" Content="OK" Appearance="Primary" Command="{Binding OkConnectionStringsCommand}"/>
                 </StackPanel>
             </ui:CardControl>
             <ui:CardControl Margin="15,8,15,0" Icon="FlipVertical20">

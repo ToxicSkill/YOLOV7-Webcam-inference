@@ -1,8 +1,10 @@
 ﻿using OpenCvSharp;
+using OpenCvSharp.WpfExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
+using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Models;
 
@@ -16,15 +18,17 @@ namespace YoloV7WebCamInference.Services
 
     public class CameraService : ICameraService
     {
+        private readonly WriteableBitmap _defaultWriteableBitmap = new Mat(new Size(1, 1), MatType.CV_8UC1).ToWriteableBitmap();
+
+        private readonly List<string> _connectionStrings;
+
         private int _currentCameraIndex;
 
         private VideoCapture _videoCapture;
 
         private List<Camera> _cameras;
 
-        private readonly Mat _image = new();
-
-        private readonly List<string> _connectionStrings;
+        private Mat _image = new();
 
         public CameraService()
         {
@@ -33,11 +37,6 @@ namespace YoloV7WebCamInference.Services
             GetAllConnectedCameras();
             _videoCapture = new VideoCapture();
             SetCurrentCamera(_cameras?.Count > 0 ? _cameras.First() : null);
-        }
-
-        private List<string> GetConnectionStrings()
-        {
-            return [.. Properties.Settings.Default.ConnectionStrings.Split("\n", StringSplitOptions.None)];
         }
 
         public string GetCurrentCameraName()
@@ -66,10 +65,29 @@ namespace YoloV7WebCamInference.Services
             _videoCapture = _cameras[_currentCameraIndex].VideoCapture;
         }
 
-        public Mat GetFrame()
+        public void GrabCameraFrame()
         {
-            _videoCapture.Read(_image);
+            if (_videoCapture.Grab())
+            {
+                _image = _videoCapture.RetrieveMat();
+            }
+        }
+
+        public Mat GetLastCameraFrame()
+        {
             return _image;
+        }
+
+        public WriteableBitmap GetLastCameraFrameAsWriteableBitmap()
+        {
+            if (_image != null)
+            {
+                if (!_image.Empty())
+                {
+                    return _image.ToWriteableBitmap();
+                }
+            }
+            return _defaultWriteableBitmap;
         }
 
         public void SetFps(int fps)
@@ -98,6 +116,11 @@ namespace YoloV7WebCamInference.Services
             return _videoCapture.IsDisposed;
         }
 
+        public void UpdateCameraInfo(Camera camera)
+        {
+            camera.ImageSourceSize = $"{camera.VideoCapture.FrameWidth}x{camera.VideoCapture.FrameHeight}";
+        }
+
         private void GetAllConnectedCameras()
         {
             _cameras = [];
@@ -119,6 +142,12 @@ namespace YoloV7WebCamInference.Services
                     _cameras.Add(new Camera(videoCapture.GetBackendName(), videoCapture));
                 }
             }
+        }
+
+        private static List<string> GetConnectionStrings()
+        {
+            var splittedConnectionStrings = new List<string>(Properties.Settings.Default.ConnectionStrings.Split("\n", StringSplitOptions.None));
+            return splittedConnectionStrings.Where(x => x != string.Empty).ToList();
         }
 
         private static List<string> GetConnectedPnPCameras()

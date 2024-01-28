@@ -10,11 +10,15 @@ namespace YoloV7WebCamInference.Interfaces
 
         List<Camera> GetAllCameras();
 
+        void UpdateCameraInfo(Camera camera);
+
         Camera GetCurrentCamera();
 
         void SetCurrentCamera(Camera? camera);
 
-        Mat GetFrame();
+        void GrabCameraFrame();
+
+        Mat GetLastCameraFrame();
 
         void SetFps(int fps);
 

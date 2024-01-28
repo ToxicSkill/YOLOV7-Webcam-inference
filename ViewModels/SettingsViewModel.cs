@@ -10,6 +10,8 @@ namespace YoloV7WebCamInference.ViewModels
     {
         private readonly IYoloModelService _yoloModelService;
 
+        [ObservableProperty]
+        private string connectionStrings;
 
         [ObservableProperty]
         public string senderString;
@@ -44,6 +46,7 @@ namespace YoloV7WebCamInference.ViewModels
             SenderPasswordString = Properties.Settings.Default.SenderPassword;
             SenderSmtpPort = Properties.Settings.Default.SenderSmtpPort;
             SmptServerString = Properties.Settings.Default.SmptServer;
+            ConnectionStrings = Properties.Settings.Default.ConnectionStrings;
 
             selectedAiModelLabels = new();
             //AiModelLabelsItemsSource = new(_yoloModelService.GetLabels().Select(x => x.Name).ToList());
@@ -52,7 +55,7 @@ namespace YoloV7WebCamInference.ViewModels
 
         public void OnNavigatedFrom()
         {
-            //Properties.Settings.Default.Save();
+            Properties.Settings.Default.Save();
             //if (SelectedAiModelLabels.Any())
             //{
             //    _yoloModelService.SetSelectedLabel(SelectedAiModelLabels.ToList());
@@ -61,6 +64,12 @@ namespace YoloV7WebCamInference.ViewModels
 
         public void OnNavigatedTo()
         {
+        }
+
+        [RelayCommand]
+        private void OkConnectionStrings()
+        {
+            Properties.Settings.Default.ConnectionStrings = ConnectionStrings;
         }
 
         [RelayCommand]
