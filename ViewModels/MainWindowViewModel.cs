@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using Wpf.Ui.Common;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Controls.Interfaces;
@@ -56,5 +58,17 @@ namespace YoloV7WebCamInference.ViewModels
                 PageType = typeof(SettingsView)
             });
         }
+
+        [RelayCommand]
+        private static void Exit() => Application.Current.Shutdown();
+
+        [RelayCommand]
+        private static void Maximize() => Application.Current.MainWindow.WindowState = WindowState.Maximized;
+
+        [RelayCommand]
+        private static void Minimize() => Application.Current.MainWindow.WindowState = WindowState.Minimized;
+
+        [RelayCommand]
+        private static void Normal() => Application.Current.MainWindow.WindowState = WindowState.Normal;
     }
 }

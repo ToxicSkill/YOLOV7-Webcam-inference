@@ -16,6 +16,49 @@
              WindowCornerPreference="Round"
              WindowStartupLocation="CenterScreen"
              mc:Ignorable="d">
+
+
+    <ui:UiWindow.Resources>
+        <ContextMenu x:Key="contextMenu">
+            <MenuItem Command="{Binding MinimizeCommand}">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Symbol="LineHorizontal120" />
+                        <TextBlock Margin="5,0"
+                                   Text="Minimize" />
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem Command="{Binding MaximizeCommand}">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Symbol="SquareMultiple20" />
+                        <TextBlock Margin="5,0"
+                                   Text="Maximize" />
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem Command="{Binding NormalCommand}">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Symbol="CenterVertical20" />
+                        <TextBlock Margin="5,0"
+                                   Text="Normal" />
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem Command="{Binding ExitCommand}">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Symbol="ArrowExit20" />
+                        <TextBlock Margin="5,0"
+                                   Text="Exit" />
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
+        </ContextMenu>
+    </ui:UiWindow.Resources>
+
     <Grid>
         <Grid x:Name="RootMainGrid"
               Margin="0">
@@ -53,6 +96,9 @@
         <ui:SymbolIcon Symbol="GridDots20"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Top"
-                       Margin="10"/>
+                       Margin="10"
+                       ContextMenu="{StaticResource contextMenu}"
+                       MouseDown="SymbolIcon_MouseDown"
+                       MouseDoubleClick="SymbolIcon_MouseDoubleClick"/>
     </Grid>
 </ui:UiWindow>

@@ -131,7 +131,14 @@ namespace YoloV7WebCamInference.Services
 
         public void UpdateCameraInfo(Camera camera)
         {
-            camera.ImageSourceSize = $"{camera.VideoCapture.FrameWidth}x{camera.VideoCapture.FrameHeight}";
+            if (camera == null)
+            {
+                return;
+            }
+            if (camera.VideoCapture != null)
+            {
+                camera.ImageSourceSize = $"{camera.VideoCapture.FrameWidth}x{camera.VideoCapture.FrameHeight}";
+            }
         }
 
         public async Task GetAllConnectedCameras()
