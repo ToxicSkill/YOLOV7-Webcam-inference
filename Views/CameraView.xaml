@@ -5,12 +5,19 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
            xmlns:viewmodels="clr-namespace:YoloV7WebCamInference.ViewModels"
+           xmlns:c="clr-namespace:YoloV7WebCamInference.Converters"
            d:DataContext="{d:DesignInstance Type=viewmodels:CameraViewModel}"
            mc:Ignorable="d"
            Loaded="UiPage_Loaded"
            d:DesignHeight="1080"
            d:DesignWidth="1920">
 
+    <ui:UiPage.Resources>
+        <ResourceDictionary>
+            <c:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        </ResourceDictionary>
+    </ui:UiPage.Resources>
+    
     <Grid>
         <Grid Grid.Row="1"
               Margin="15,15,15,15">
@@ -43,6 +50,9 @@
                            HorizontalAlignment="Center"
                            Text="Devices"
                            FontSize="24" />
+                <ui:ProgressRing Grid.Row="5"
+                                 IsIndeterminate="True"
+                                 Visibility="{Binding ScanInProgress, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ListView Grid.Row="5"
                           ItemsSource="{Binding AvailableCameras, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           HorizontalAlignment="Stretch"

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using OpenCvSharp.WpfExtensions;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Threading;
 using Wpf.Ui.Mvvm.Contracts;
 using YoloV7WebCamInference.Interfaces;
@@ -53,6 +53,9 @@ namespace YoloV7WebCamInference.ViewModels
         [ObservableProperty]
         private int scoreThreshold = DefaultScoreThreshold;
 
+        [ObservableProperty]
+        private bool scanInProgress;
+
         public CameraViewModel(IYoloModelService yoloModelService, ICameraService cameraService, ISnackbarService snackbarService)
         {
             _snackbarService = snackbarService;
@@ -60,6 +63,7 @@ namespace YoloV7WebCamInference.ViewModels
             _cameraService = cameraService;
             _cancellationToken = new CancellationTokenSource();
             _fpsQueue = new Queue<int>();
+            AvailableCameras = new();
         }
 
         partial void OnRunCameraChanged(bool value)
@@ -102,27 +106,12 @@ namespace YoloV7WebCamInference.ViewModels
         partial void OnSelectedCameraChanged(Camera value)
         {
             _cameraService.SetCurrentCamera(SelectedCamera);
-
             _cameraService.UpdateCameraInfo(SelectedCamera);
         }
 
-        internal void OnLoaded()
+        internal void OnUnloaded()
         {
-            AvailableCameras = new(_cameraService.GetAllCameras());
-            InitializeCamera();
-        }
-
-
-        private bool InitializeCamera()
-        {
-            if (_cameraService.IsCameraOpen())
-            {
-                _cameraService.SetBufferSize(0);
-                SelectedCamera = _cameraService.GetCurrentCamera();
-                return true;
-            }
-
-            return false;
+            RunCamera = false;
         }
 
         private async Task PlayCamera()
@@ -134,7 +123,7 @@ namespace YoloV7WebCamInference.ViewModels
                 {
                     _cancellationToken.Token.ThrowIfCancellationRequested();
                     var timestamp = Stopwatch.GetTimestamp();
-                    await Application.Current.Dispatcher.BeginInvoke(() =>
+                    await App.Current.Dispatcher.BeginInvoke(() =>
                     {
                         if (RunCamera)
                         {
@@ -182,6 +171,29 @@ namespace YoloV7WebCamInference.ViewModels
         private void RestartCancelToken()
         {
             _cancellationToken = new CancellationTokenSource();
+        }
+
+        [RelayCommand]
+        private async Task ScanCameras()
+        {
+            ScanInProgress = true;
+            await _cameraService.GetAllConnectedCameras();
+            var cameras = _cameraService.GetAllCameras();
+            Camera? camera = null;
+            if (_cameraService.IsCameraOpen())
+            {
+                _cameraService.SetBufferSize(0);
+                camera = _cameraService.GetCurrentCamera();
+            }
+            await App.Current.Dispatcher.BeginInvoke(() =>
+            {
+                AvailableCameras = new(cameras);
+                if (camera != null)
+                {
+                    SelectedCamera = camera;
+                }
+            });
+            ScanInProgress = false;
         }
     }
 }

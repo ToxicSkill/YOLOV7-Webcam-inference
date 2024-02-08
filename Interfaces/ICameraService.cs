@@ -1,5 +1,6 @@
 ﻿using OpenCvSharp;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using YoloV7WebCamInference.Models;
 
 namespace YoloV7WebCamInference.Interfaces
@@ -7,6 +8,8 @@ namespace YoloV7WebCamInference.Interfaces
     public interface ICameraService
     {
         string GetCurrentCameraName();
+
+        Task GetAllConnectedCameras();
 
         List<Camera> GetAllCameras();
 

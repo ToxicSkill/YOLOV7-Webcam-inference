@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Models;
@@ -18,6 +19,8 @@ namespace YoloV7WebCamInference.Services
 
     public class CameraService : ICameraService
     {
+        private readonly Mat _defaultWMat = new Mat(new Size(1, 1), MatType.CV_8UC1);
+
         private readonly WriteableBitmap _defaultWriteableBitmap = new Mat(new Size(1, 1), MatType.CV_8UC1).ToWriteableBitmap();
 
         private readonly List<string> _connectionStrings;
@@ -34,9 +37,7 @@ namespace YoloV7WebCamInference.Services
         {
             _connectionStrings = GetConnectionStrings();
             _cameras = [];
-            GetAllConnectedCameras();
-            _videoCapture = new VideoCapture();
-            SetCurrentCamera(_cameras?.Count > 0 ? _cameras.First() : null);
+            _videoCapture = new();
         }
 
         public string GetCurrentCameraName()
@@ -62,7 +63,15 @@ namespace YoloV7WebCamInference.Services
             }
 
             _currentCameraIndex = _cameras.IndexOf(camera);
-            _videoCapture = _cameras[_currentCameraIndex].VideoCapture;
+            if (string.IsNullOrEmpty(camera.VideoCaptureConnectionString))
+            {
+                camera.VideoCapture = new VideoCapture(camera.VideoCaptureConnectionIndex);
+            }
+            else
+            {
+                camera.VideoCapture = new VideoCapture(camera.VideoCaptureConnectionString);
+            }
+            _videoCapture = camera.VideoCapture;
         }
 
         public void GrabCameraFrame()
@@ -75,7 +84,11 @@ namespace YoloV7WebCamInference.Services
 
         public Mat GetLastCameraFrame()
         {
-            return _image;
+            if (!_image.Empty())
+            {
+                return _image;
+            }
+            return _defaultWMat;
         }
 
         public WriteableBitmap GetLastCameraFrameAsWriteableBitmap()
@@ -121,26 +134,54 @@ namespace YoloV7WebCamInference.Services
             camera.ImageSourceSize = $"{camera.VideoCapture.FrameWidth}x{camera.VideoCapture.FrameHeight}";
         }
 
-        private void GetAllConnectedCameras()
+        public async Task GetAllConnectedCameras()
         {
             _cameras = [];
             var cameraIndex = 0;
-            foreach (var cameraName in GetConnectedPnPCameras())
+            var pnpCamerasCount = 0;
+            var hasConnectionString = false;
+            var camerasName = GetConnectedPnPCameras();
+            pnpCamerasCount = camerasName.Count;
+            camerasName.AddRange(GetConnectionStrings());
+            foreach (var connectionString in camerasName)
             {
-                var videoCapture = new VideoCapture(cameraIndex);
-                if (videoCapture.IsOpened())
+                var fps = 0;
+                var name = "";
+                if (await Task.Run(() =>
                 {
-                    _cameras.Add(new Camera(cameraName, videoCapture));
-                    cameraIndex++;
-                }
-            }
-            foreach (var connectionString in GetConnectionStrings())
-            {
-                var videoCapture = new VideoCapture(connectionString);
-                if (videoCapture.IsOpened())
+                    VideoCapture? videoCapture = null;
+                    if (cameraIndex == pnpCamerasCount)
+                    {
+                        videoCapture = new VideoCapture(connectionString);
+                        hasConnectionString = true;
+                    }
+                    else
+                    {
+                        videoCapture = new VideoCapture(cameraIndex);
+                        hasConnectionString = false;
+                    }
+                    if (videoCapture != null)
+                    {
+                        if (videoCapture.IsOpened())
+                        {
+                            name = videoCapture.GetBackendName();
+                            fps = (int)videoCapture.Fps;
+                            return true;
+                        }
+                    }
+                    return false;
+                }))
                 {
-                    _cameras.Add(new Camera(videoCapture.GetBackendName(), videoCapture));
+                    if (hasConnectionString)
+                    {
+                        _cameras.Add(new Camera(name, connectionString, fps));
+                    }
+                    else
+                    {
+                        _cameras.Add(new Camera(name, cameraIndex, fps));
+                    }
                 }
+                cameraIndex++;
             }
         }
 
