@@ -13,6 +13,10 @@ Implemenation of ONNX model [yolov7](https://github.com/WongKinYiu/yolov7) infer
 ## What's new 🤗 
 - **Multicamera support**
 - **Ready to use model** (no export needed)
+- **.NET 8.0**
+- **IP Cameras support**
+- **Fluent [WPF-UI](https://github.com/lepoco/wpfui) design**
+- **Inference speed optimalizations**
 
 ## Usage
 Download .pt model **or use onnx exported model** (in *Yolo* folder)
