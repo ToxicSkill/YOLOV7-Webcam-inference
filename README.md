@@ -2,7 +2,7 @@
 
 <div align="center">
     <a href="./">
-        <img src="./Figure/RealTimePredictions.png" width="75%"/>
+        <img src="./Figure/RealTimePredictions.png" width="100%"/>
     </a>
 </div>
 
