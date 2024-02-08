@@ -1,15 +1,26 @@
-﻿using System.Windows.Controls;
+﻿using Wpf.Ui.Common.Interfaces;
+using YoloV7WebCamInference.ViewModels;
 
 namespace YoloV7WebCamInference.Views
 {
-    /// <summary>
-    /// Interaction logic for CameraView.xaml
-    /// </summary>
-    public partial class CameraView : UserControl
+    public partial class CameraView : INavigableView<CameraViewModel>
     {
-        public CameraView()
+
+        public CameraViewModel ViewModel
         {
+            get;
+        }
+
+        public CameraView(CameraViewModel viewModel)
+        {
+            ViewModel = viewModel;
             InitializeComponent();
+            DataContext = ViewModel;
+        }
+
+        private async void UiPage_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            await ViewModel.ScanCamerasCommand.ExecuteAsync(null);
         }
     }
 }

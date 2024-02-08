@@ -1,15 +1,74 @@
-﻿using YoloV7WebCamInference.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows;
+using Wpf.Ui.Common;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Controls.Interfaces;
+using Wpf.Ui.Controls.Navigation;
+using YoloV7WebCamInference.Views;
 
 namespace YoloV7WebCamInference.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public partial class MainWindowViewModel : ObservableObject
     {
-        public ViewModelBase ViewModel { get; set; }
+        [ObservableProperty]
+        public ICollection<INavigationControl> menuItems;
 
-        public MainWindowViewModel(ViewModelBase viewModel)
+        [ObservableProperty]
+        public ICollection<INavigationControl> footerItems;
+
+        [ObservableProperty]
+        public CameraView cameraView;
+
+        public MainWindowViewModel(CameraView cameraView)
         {
-            ViewModel = viewModel;
-            OnPropertyChanged(nameof(ViewModel));
+            MenuItems = new ObservableCollection<INavigationControl>();
+            FooterItems = new ObservableCollection<INavigationControl>();
+            InitializeMenu();
+            CameraView = cameraView;
         }
+
+        private void InitializeMenu()
+        {
+            MenuItems.Add(new NavigationItem()
+            {
+                Icon = SymbolRegular.Home20,
+                PageTag = "home",
+                Cache = true,
+                Content = "Main",
+                PageType = typeof(DashboardView)
+            });
+            MenuItems.Add(new NavigationSeparator());
+            MenuItems.Add(new NavigationItem()
+            {
+                Icon = SymbolRegular.Camera20,
+                PageTag = "camera",
+                Cache = true,
+                Content = "Camera",
+                PageType = typeof(CameraView)
+            });
+            MenuItems.Add(new NavigationItem()
+            {
+                Icon = SymbolRegular.Settings20,
+                PageTag = "settings",
+                Cache = true,
+                Content = "Settings",
+                PageType = typeof(SettingsView)
+            });
+        }
+
+        [RelayCommand]
+        private static void Exit() => Application.Current.Shutdown();
+
+        [RelayCommand]
+        private static void Maximize() => Application.Current.MainWindow.WindowState = WindowState.Maximized;
+
+        [RelayCommand]
+        private static void Minimize() => Application.Current.MainWindow.WindowState = WindowState.Minimized;
+
+        [RelayCommand]
+        private static void Normal() => Application.Current.MainWindow.WindowState = WindowState.Normal;
     }
 }

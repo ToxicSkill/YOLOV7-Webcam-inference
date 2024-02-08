@@ -1,63 +1,45 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.IO;
+using System.Reflection;
 using System.Windows;
+using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Mvvm.Services;
 using YoloV7WebCamInference.Interfaces;
 using YoloV7WebCamInference.Services;
 using YoloV7WebCamInference.ViewModels;
+using YoloV7WebCamInference.Views;
 
 namespace YoloV7WebCamInference
 {
     public partial class App : Application
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        private const string ModelPath = "Yolo\\yolov7-tiny.onnx";
-
-        public App()
+        private static readonly IHost _host = Host
+        .CreateDefaultBuilder()
+        .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)); })
+        .ConfigureServices((context, services) =>
         {
-            IServiceCollection services = new ServiceCollection();
+            services.AddHostedService<ApplicationHostService>();
+            services.AddSingleton<IThemeService, ThemeService>();
+            services.AddSingleton<IPageService, PageService>();
+            services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<ISnackbarService, SnackbarService>();
+            services.AddSingleton<IYoloModelService, YoloModelService>();
+            services.AddSingleton<ICameraService, CameraService>();
+            services.AddSingleton<SettingsViewModel>();
+            services.AddSingleton<SettingsView>();
+            services.AddSingleton<CameraViewModel>();
+            services.AddSingleton<CameraView>();
+            services.AddSingleton<DashboardViewModel>();
+            services.AddSingleton<DashboardView>();
+            services.AddScoped<MainWindowViewModel>();
+            services.AddScoped<INavigationWindow, MainWindow>();
+        }).Build();
 
-            _ = services
-                .AddSingleton(CreateYoloModelService)
-                .AddSingleton(CreateCameraService)
-                .AddSingleton(CreateCameraViewModel)
-                .AddSingleton(CreateMainWindowViewModel)
-                .AddSingleton(s => new MainWindow()
-                {
-                    DataContext = s.GetRequiredService<MainWindowViewModel>()
-                });
-
-            _serviceProvider = services.BuildServiceProvider();
-        }
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
-            MainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-            MainWindow.Show();
-
-            base.OnStartup(e);
-        }
-
-        public static CameraWindowViewModel CreateCameraViewModel(IServiceProvider provider)
-        {
-            var yoloModelService = provider.GetRequiredService<IYoloModelService>();
-            var cameraService = provider.GetRequiredService<ICameraService>();
-            return new CameraWindowViewModel(yoloModelService, cameraService, ModelPath);
-        }
-
-        public static IYoloModelService CreateYoloModelService(IServiceProvider provider)
-        {
-            return new YoloModelService();
-        }
-
-        public static ICameraService CreateCameraService(IServiceProvider provider)
-        {
-            return new CameraService();
-        }
-
-        private MainWindowViewModel CreateMainWindowViewModel(IServiceProvider provider)
-        {
-            var cameraViewModel = provider.GetRequiredService<CameraWindowViewModel>();
-            return new MainWindowViewModel(cameraViewModel);
+            await _host.StartAsync();
         }
     }
 }
